@@ -1,23 +1,25 @@
-'use client';
+"use client";
 
-import { useChat } from 'ai/react';
-import { useEffect, useRef } from 'react';
-import { artifactDefinitions, ArtifactKind } from './artifact';
-import { Suggestion } from '@/lib/db/schema';
-import { initialArtifactData, useArtifact } from '@/hooks/use-artifact';
+import { useChat } from "ai/react";
+import { useEffect, useRef } from "react";
+import { artifactDefinitions, ArtifactKind } from "./artifact";
+import { Suggestion } from "@/lib/db/schema";
+import { initialArtifactData, useArtifact } from "@/hooks/use-artifact";
+import { toast } from "sonner";
 
 export type DataStreamDelta = {
   type:
-    | 'text-delta'
-    | 'code-delta'
-    | 'sheet-delta'
-    | 'image-delta'
-    | 'title'
-    | 'id'
-    | 'suggestion'
-    | 'clear'
-    | 'finish'
-    | 'kind';
+    | "text-delta"
+    | "code-delta"
+    | "sheet-delta"
+    | "image-delta"
+    | "title"
+    | "id"
+    | "suggestion"
+    | "clear"
+    | "finish"
+    | "kind"
+    | "error";
   content: string | Suggestion;
 };
 
@@ -34,7 +36,7 @@ export function DataStreamHandler({ id }: { id: string }) {
 
     (newDeltas as DataStreamDelta[]).forEach((delta: DataStreamDelta) => {
       const artifactDefinition = artifactDefinitions.find(
-        (artifactDefinition) => artifactDefinition.kind === artifact.kind,
+        (artifactDefinition) => artifactDefinition.kind === artifact.kind
       );
 
       if (artifactDefinition?.onStreamPart) {
@@ -47,42 +49,49 @@ export function DataStreamHandler({ id }: { id: string }) {
 
       setArtifact((draftArtifact) => {
         if (!draftArtifact) {
-          return { ...initialArtifactData, status: 'streaming' };
+          return { ...initialArtifactData, status: "streaming" };
         }
 
         switch (delta.type) {
-          case 'id':
+          case "id":
             return {
               ...draftArtifact,
               documentId: delta.content as string,
-              status: 'streaming',
+              status: "streaming",
             };
 
-          case 'title':
+          case "title":
             return {
               ...draftArtifact,
               title: delta.content as string,
-              status: 'streaming',
+              status: "streaming",
             };
 
-          case 'kind':
+          case "kind":
             return {
               ...draftArtifact,
               kind: delta.content as ArtifactKind,
-              status: 'streaming',
+              status: "streaming",
             };
 
-          case 'clear':
+          case "clear":
             return {
               ...draftArtifact,
-              content: '',
-              status: 'streaming',
+              content: "",
+              status: "streaming",
             };
 
-          case 'finish':
+          case "finish":
             return {
               ...draftArtifact,
-              status: 'idle',
+              status: "idle",
+            };
+
+          case "error":
+            toast.error(delta.content as string);
+            return {
+              ...draftArtifact,
+              status: "idle",
             };
 
           default:

@@ -8,12 +8,7 @@ import { memo, useMemo, useState } from "react";
 import type { Vote } from "@/lib/db/schema";
 
 import { DocumentToolCall, DocumentToolResult } from "./document";
-import {
-  ChevronDownIcon,
-  LoaderIcon,
-  PencilEditIcon,
-  SparklesIcon,
-} from "./icons";
+import { ChevronDownIcon, LoaderIcon, PencilEditIcon } from "./icons";
 import { Markdown } from "./markdown";
 import { MessageActions } from "./message-actions";
 import { PreviewAttachment } from "./preview-attachment";
@@ -25,6 +20,13 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { MessageEditor } from "./message-editor";
 import { DocumentPreview } from "./document-preview";
 import { MessageReasoning } from "./message-reasoning";
+
+const PulsingCircle = () => (
+  <div className="relative">
+    <div className="absolute size-2.5 bg-primary rounded-full animate-ping" />
+    <div className="relative size-2.5 bg-primary rounded-full" />
+  </div>
+);
 
 const PurePreviewMessage = ({
   chatId,
@@ -59,21 +61,13 @@ const PurePreviewMessage = ({
       >
         <div
           className={cn(
-            "flex gap-4 w-full group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl",
+            "flex w-full group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl",
             {
               "w-full": mode === "edit",
               "group-data-[role=user]/message:w-fit": mode !== "edit",
             }
           )}
         >
-          {message.role === "assistant" && (
-            <div className="size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border">
-              <div className="translate-y-px">
-                <SparklesIcon size={14} />
-              </div>
-            </div>
-          )}
-
           <div className="flex flex-col gap-4 w-full">
             {message.experimental_attachments && (
               <div className="flex flex-row justify-end gap-2">
@@ -114,7 +108,7 @@ const PurePreviewMessage = ({
 
                 <div
                   className={cn("flex flex-col gap-4", {
-                    "bg-primary text-primary-foreground px-3 py-2 rounded-xl":
+                    "bg-zinc-200 dark:bg-zinc-800 px-3 py-2 rounded-xl":
                       message.role === "user",
                   })}
                 >
@@ -243,27 +237,14 @@ export const ThinkingMessage = () => {
 
   return (
     <motion.div
-      className="w-full mx-auto max-w-3xl px-4 group/message "
+      className="w-full mx-auto max-w-3xl px-4 group/message"
       initial={{ y: 5, opacity: 0 }}
       animate={{ y: 0, opacity: 1, transition: { delay: 1 } }}
       data-role={role}
     >
-      <div
-        className={cx(
-          "flex gap-4 group-data-[role=user]/message:px-3 w-full group-data-[role=user]/message:w-fit group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl group-data-[role=user]/message:py-2 rounded-xl",
-          {
-            "group-data-[role=user]/message:bg-muted": true,
-          }
-        )}
-      >
-        <div className="size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border">
-          <SparklesIcon size={14} />
-        </div>
-
-        <div className="flex flex-col gap-2 w-full">
-          <div className="flex flex-col gap-4 text-muted-foreground">
-            Thinking...
-          </div>
+      <div className="flex flex-col gap-2 w-full">
+        <div className="flex flex-col gap-4 text-muted-foreground">
+          contemplating...
         </div>
       </div>
     </motion.div>

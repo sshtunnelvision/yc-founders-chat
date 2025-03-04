@@ -21,51 +21,70 @@ export const createDocument = ({ session, dataStream }: CreateDocumentProps) =>
       kind: z.enum(artifactKinds),
     }),
     execute: async ({ title, kind }) => {
-      const id = generateUUID();
+      try {
+        const id = generateUUID();
 
-      dataStream.writeData({
-        type: 'kind',
-        content: kind,
-      });
+        dataStream.writeData({
+          type: 'kind',
+          content: kind,
+        });
 
-      dataStream.writeData({
-        type: 'id',
-        content: id,
-      });
+        dataStream.writeData({
+          type: 'id',
+          content: id,
+        });
 
-      dataStream.writeData({
-        type: 'title',
-        content: title,
-      });
+        dataStream.writeData({
+          type: 'title',
+          content: title,
+        });
 
-      dataStream.writeData({
-        type: 'clear',
-        content: '',
-      });
+        dataStream.writeData({
+          type: 'clear',
+          content: '',
+        });
 
-      const documentHandler = documentHandlersByArtifactKind.find(
-        (documentHandlerByArtifactKind) =>
-          documentHandlerByArtifactKind.kind === kind,
-      );
+        const documentHandler = documentHandlersByArtifactKind.find(
+          (documentHandlerByArtifactKind) =>
+            documentHandlerByArtifactKind.kind === kind,
+        );
 
-      if (!documentHandler) {
-        throw new Error(`No document handler found for kind: ${kind}`);
+        if (!documentHandler) {
+          dataStream.writeData({
+            type: 'error',
+            content: `No document handler found for kind: ${kind}`,
+          });
+          throw new Error(`No document handler found for kind: ${kind}`);
+        }
+
+        await documentHandler.onCreateDocument({
+          id,
+          title,
+          dataStream,
+          session,
+        }).catch((error: Error) => {
+          dataStream.writeData({
+            type: 'error',
+            content: error.message || 'Failed to create document',
+          });
+          throw error;
+        });
+
+        dataStream.writeData({ type: 'finish', content: '' });
+
+        return {
+          id,
+          title,
+          kind,
+          content: 'A document was created and is now visible to the user.',
+        };
+      } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to create document';
+        dataStream.writeData({
+          type: 'error',
+          content: errorMessage,
+        });
+        throw error;
       }
-
-      await documentHandler.onCreateDocument({
-        id,
-        title,
-        dataStream,
-        session,
-      });
-
-      dataStream.writeData({ type: 'finish', content: '' });
-
-      return {
-        id,
-        title,
-        kind,
-        content: 'A document was created and is now visible to the user.',
-      };
     },
   });
