@@ -1,10 +1,10 @@
-import { PreviewMessage } from './message';
-import { useScrollToBottom } from './use-scroll-to-bottom';
-import { Vote } from '@/lib/db/schema';
-import { ChatRequestOptions, Message } from 'ai';
-import { memo } from 'react';
-import equal from 'fast-deep-equal';
-import { UIArtifact } from './artifact';
+import { PreviewMessage } from "./message";
+import { useScrollToBottom } from "./use-scroll-to-bottom";
+import { Vote } from "@/lib/db/schema";
+import { ChatRequestOptions, Message } from "ai";
+import { memo } from "react";
+import equal from "fast-deep-equal";
+import { UIArtifact } from "./artifact";
 
 interface ArtifactMessagesProps {
   chatId: string;
@@ -12,13 +12,13 @@ interface ArtifactMessagesProps {
   votes: Array<Vote> | undefined;
   messages: Array<Message>;
   setMessages: (
-    messages: Message[] | ((messages: Message[]) => Message[]),
+    messages: Message[] | ((messages: Message[]) => Message[])
   ) => void;
   reload: (
-    chatRequestOptions?: ChatRequestOptions,
+    chatRequestOptions?: ChatRequestOptions
   ) => Promise<string | null | undefined>;
   isReadonly: boolean;
-  artifactStatus: UIArtifact['status'];
+  artifactStatus: UIArtifact["status"];
 }
 
 function PureArtifactMessages({
@@ -65,11 +65,11 @@ function PureArtifactMessages({
 
 function areEqual(
   prevProps: ArtifactMessagesProps,
-  nextProps: ArtifactMessagesProps,
+  nextProps: ArtifactMessagesProps
 ) {
   if (
-    prevProps.artifactStatus === 'streaming' &&
-    nextProps.artifactStatus === 'streaming'
+    prevProps.artifactStatus === "streaming" &&
+    nextProps.artifactStatus === "streaming"
   )
     return true;
 

@@ -1,30 +1,30 @@
-import { memo } from 'react';
+import { memo } from "react";
 
-import type { ArtifactKind } from './artifact';
-import { FileIcon, LoaderIcon, MessageIcon, PencilEditIcon } from './icons';
-import { toast } from 'sonner';
-import { useArtifact } from '@/hooks/use-artifact';
+import type { ArtifactKind } from "./artifact";
+import { FileIcon, LoaderIcon, MessageIcon, PencilEditIcon } from "./icons";
+import { toast } from "sonner";
+import { useArtifact } from "@/hooks/use-artifact";
 
 const getActionText = (
-  type: 'create' | 'update' | 'request-suggestions',
-  tense: 'present' | 'past',
+  type: "create" | "update" | "request-suggestions",
+  tense: "present" | "past"
 ) => {
   switch (type) {
-    case 'create':
-      return tense === 'present' ? 'Creating' : 'Created';
-    case 'update':
-      return tense === 'present' ? 'Updating' : 'Updated';
-    case 'request-suggestions':
-      return tense === 'present'
-        ? 'Adding suggestions'
-        : 'Added suggestions to';
+    case "create":
+      return tense === "present" ? "Creating" : "Created";
+    case "update":
+      return tense === "present" ? "Updating" : "Updated";
+    case "request-suggestions":
+      return tense === "present"
+        ? "Adding suggestions"
+        : "Added suggestions to";
     default:
       return null;
   }
 };
 
 interface DocumentToolResultProps {
-  type: 'create' | 'update' | 'request-suggestions';
+  type: "create" | "update" | "request-suggestions";
   result: { id: string; title: string; kind: ArtifactKind };
   isReadonly: boolean;
 }
@@ -39,11 +39,11 @@ function PureDocumentToolResult({
   return (
     <button
       type="button"
-      className="bg-background cursor-pointer border py-2 px-3 rounded-xl w-fit flex flex-row gap-3 items-start"
+      className="  cursor-pointer border py-2 px-3 rounded-xl w-fit flex flex-row gap-3 items-start"
       onClick={(event) => {
         if (isReadonly) {
           toast.error(
-            'Viewing files in shared chats is currently not supported.',
+            "Viewing files in shared chats is currently not supported."
           );
           return;
         }
@@ -60,25 +60,25 @@ function PureDocumentToolResult({
         setArtifact({
           documentId: result.id,
           kind: result.kind,
-          content: '',
+          content: "",
           title: result.title,
           isVisible: true,
-          status: 'idle',
+          status: "idle",
           boundingBox,
         });
       }}
     >
       <div className="text-muted-foreground mt-1">
-        {type === 'create' ? (
+        {type === "create" ? (
           <FileIcon />
-        ) : type === 'update' ? (
+        ) : type === "update" ? (
           <PencilEditIcon />
-        ) : type === 'request-suggestions' ? (
+        ) : type === "request-suggestions" ? (
           <MessageIcon />
         ) : null}
       </div>
       <div className="text-left">
-        {`${getActionText(type, 'past')} "${result.title}"`}
+        {`${getActionText(type, "past")} "${result.title}"`}
       </div>
     </button>
   );
@@ -87,7 +87,7 @@ function PureDocumentToolResult({
 export const DocumentToolResult = memo(PureDocumentToolResult, () => true);
 
 interface DocumentToolCallProps {
-  type: 'create' | 'update' | 'request-suggestions';
+  type: "create" | "update" | "request-suggestions";
   args: { title: string };
   isReadonly: boolean;
 }
@@ -106,7 +106,7 @@ function PureDocumentToolCall({
       onClick={(event) => {
         if (isReadonly) {
           toast.error(
-            'Viewing files in shared chats is currently not supported.',
+            "Viewing files in shared chats is currently not supported."
           );
           return;
         }
@@ -129,17 +129,19 @@ function PureDocumentToolCall({
     >
       <div className="flex flex-row gap-3 items-start">
         <div className="text-zinc-500 mt-1">
-          {type === 'create' ? (
+          {type === "create" ? (
             <FileIcon />
-          ) : type === 'update' ? (
+          ) : type === "update" ? (
             <PencilEditIcon />
-          ) : type === 'request-suggestions' ? (
+          ) : type === "request-suggestions" ? (
             <MessageIcon />
           ) : null}
         </div>
 
         <div className="text-left">
-          {`${getActionText(type, 'present')} ${args.title ? `"${args.title}"` : ''}`}
+          {`${getActionText(type, "present")} ${
+            args.title ? `"${args.title}"` : ""
+          }`}
         </div>
       </div>
 
