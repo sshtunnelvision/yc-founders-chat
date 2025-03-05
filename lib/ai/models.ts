@@ -25,11 +25,14 @@ export const myProvider = customProvider({
   },
 });
 
+type ArtifactType = 'text' | 'code' | 'image' | 'sheet';
+
 interface ChatModel {
   id: string;
   name: string;
   description: string;
   available: boolean;
+  artifacts: Array<ArtifactType>;
 }
 
 // Only export models that are available
@@ -39,35 +42,41 @@ export const chatModels: Array<ChatModel> = [
     name: 'GPT-4o Mini',
     description: 'Lightweight OpenAI model',
     available: true,
+    artifacts: ['text', 'code'] as Array<ArtifactType>,
   },
   {
     id: 'gpt-4o',
     name: 'GPT-4o',
     description: 'Flagship OpenAI model',
     available: true,
+    artifacts: ['text', 'code', 'image', 'sheet'] as Array<ArtifactType>,
   },
   {
     id: 'claude-3.7-sonnet',
     name: 'Claude 3.7 Sonnet',
     description: 'Best coding model based on accepted benchmarks/evaluations',
     available: true,
+    artifacts: ['text', 'code', 'sheet'] as Array<ArtifactType>,
   },
   {
     id: 'claude-3.5-sonnet',
     name: 'Claude 3.5 Sonnet',
     description: 'Anthropic\'s flagship coding model',
     available: true,
+    artifacts: ['text', 'code', 'sheet'] as Array<ArtifactType>,
   },
   {
     id: 'gemini-2.0-flash-exp',
     name: 'Gemini 2.0',
     description: 'Google\'s fastest flash model',
     available: true,
+    artifacts: ['text', 'code', 'image'] as Array<ArtifactType>,
   },
   {
     id: 'gemini-1.5-pro',
     name: 'Gemini 1.5 Pro',
     description: 'Google\'s advanced pro model',
     available: true,
+    artifacts: ['text', 'code', 'image', 'sheet'] as Array<ArtifactType>,
   },
 ].filter(model => model.available);

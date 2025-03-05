@@ -1,10 +1,22 @@
-import Link from 'next/link';
-import React, { memo } from 'react';
-import ReactMarkdown, { type Components } from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import { CodeBlock } from './code-block';
+import Link from "next/link";
+import React, { memo } from "react";
+import ReactMarkdown, { type Components } from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { CodeBlock } from "./code-block";
 
 const components: Partial<Components> = {
+  // Override paragraph to prevent wrapping code blocks in p tags
+  p: ({ node, children, ...props }) => {
+    // Check if the only child is a code block
+    if (
+      React.Children.toArray(children).some(
+        (child) => React.isValidElement(child) && child.type === CodeBlock
+      )
+    ) {
+      return <>{children}</>;
+    }
+    return <p {...props}>{children}</p>;
+  },
   // @ts-expect-error
   code: CodeBlock,
   pre: ({ children }) => <>{children}</>,
@@ -105,5 +117,5 @@ const NonMemoizedMarkdown = ({ children }: { children: string }) => {
 
 export const Markdown = memo(
   NonMemoizedMarkdown,
-  (prevProps, nextProps) => prevProps.children === nextProps.children,
+  (prevProps, nextProps) => prevProps.children === nextProps.children
 );

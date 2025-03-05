@@ -13,6 +13,7 @@ import {
   getChatById,
   saveChat,
   saveMessages,
+  toggleChatPinned,
 } from '@/lib/db/queries';
 import {
   generateUUID,
@@ -155,6 +156,47 @@ export async function DELETE(request: Request) {
 
     return new Response('Chat deleted', { status: 200 });
   } catch (error) {
+    return new Response('An error occurred while processing your request', {
+      status: 500,
+    });
+  }
+}
+
+export async function PATCH(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get('id');
+  const action = searchParams.get('action');
+
+  if (!id) {
+    return new Response('Not Found', { status: 404 });
+  }
+
+  if (action !== 'toggle-pin') {
+    return new Response('Invalid action', { status: 400 });
+  }
+
+  const session = await auth();
+
+  if (!session || !session.user) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  try {
+    const chat = await getChatById({ id });
+
+    if (!chat) {
+      return new Response('Chat not found', { status: 404 });
+    }
+
+    if (chat.userId !== session.user.id) {
+      return new Response('Unauthorized', { status: 401 });
+    }
+
+    await toggleChatPinned({ chatId: id });
+
+    return new Response('Pin status toggled', { status: 200 });
+  } catch (error) {
+    console.error('Error toggling pin status:', error);
     return new Response('An error occurred while processing your request', {
       status: 500,
     });

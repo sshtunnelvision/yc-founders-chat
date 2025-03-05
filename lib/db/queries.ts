@@ -87,7 +87,7 @@ export async function getChatsByUserId({ id }: { id: string }) {
       .select()
       .from(chat)
       .where(eq(chat.userId, id))
-      .orderBy(desc(chat.createdAt));
+      .orderBy(desc(chat.pinned), desc(chat.createdAt));
   } catch (error) {
     console.error('Failed to get chats by user from database');
     throw error;
@@ -342,6 +342,23 @@ export async function updateChatVisiblityById({
     return await db.update(chat).set({ visibility }).where(eq(chat.id, chatId));
   } catch (error) {
     console.error('Failed to update chat visibility in database');
+    throw error;
+  }
+}
+
+export async function toggleChatPinned({ chatId }: { chatId: string }) {
+  try {
+    const [selectedChat] = await db.select().from(chat).where(eq(chat.id, chatId));
+    if (!selectedChat) {
+      throw new Error('Chat not found');
+    }
+    
+    return await db
+      .update(chat)
+      .set({ pinned: !selectedChat.pinned })
+      .where(eq(chat.id, chatId));
+  } catch (error) {
+    console.error('Failed to toggle chat pinned status in database');
     throw error;
   }
 }

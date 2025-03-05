@@ -1103,6 +1103,30 @@ export const ImageIcon = ({ size = 16 }: { size?: number }) => {
   );
 };
 
+export const PinIcon = ({
+  size = 16,
+  className,
+}: {
+  size?: number;
+  className?: string;
+}) => (
+  <svg
+    height={size}
+    strokeLinejoin="round"
+    viewBox="0 0 16 16"
+    width={size}
+    className={className}
+    style={{ color: "currentcolor" }}
+  >
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M10.7071 1.29289L11 1L12 2L11.7071 2.29289L11.4142 2.58579L13.4142 4.58579L13.7071 4.87868L14.7071 3.87868L15 3.58579L14 2.58579L13.7071 2.29289L13.4142 2L13.1213 1.70711L12.1213 0.707107L11.8284 0.414214L11.5355 0.707107L10.7071 1.29289ZM10 2L9.91421 2.08579L4.08579 7.91421L3.99749 8.00251L3.99619 8.00381L3.91421 8.08579L2 10L2.70711 10.7071L4.62132 8.79289L4.7033 8.71091L4.7046 8.70961L4.7929 8.62132L10.6213 2.79289L10.7071 2.70711L10 2ZM8.58579 10.5858L8.85357 11.1213L8.5 11.5L8.14645 11.8536L3.14645 14.8536L2.5 15.2071L2.79289 14.5607L5.79289 9.56066L6.14645 9.20711L6.52513 9.1464L7.06066 9.41419L8.58579 10.5858ZM3.52513 13.4749L6.97487 11.3035L6.06066 10.5858L4.69645 13.3035L3.52513 14.4749V13.4749Z"
+      fill="currentColor"
+    ></path>
+  </svg>
+);
+
 export const FullscreenIcon = ({ size = 16 }: { size?: number }) => (
   <svg
     height={size}
