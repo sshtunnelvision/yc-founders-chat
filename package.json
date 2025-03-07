@@ -11,6 +11,7 @@
     "format": "biome format --write",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "npx tsx lib/db/migrate.ts",
+    "db:migrate:prod": "CONFIRM_PROD_MIGRATION=true NODE_ENV=production npx tsx lib/db/migrate-prod.ts",
     "db:studio": "drizzle-kit studio",
     "db:push": "drizzle-kit push",
     "db:pull": "drizzle-kit pull",

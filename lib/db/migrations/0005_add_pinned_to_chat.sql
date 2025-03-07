@@ -1,1 +1,1 @@
-ALTER TABLE "Chat" ADD COLUMN "pinned" boolean NOT NULL DEFAULT false;
+ALTER TABLE "elucide-v2"."Chat" ADD COLUMN "pinned" boolean NOT NULL DEFAULT false;

@@ -13,4 +13,6 @@ export default defineConfig({
     // biome-ignore lint: Forbidden non-null assertion.
     url: process.env.POSTGRES_URL!,
   },
+  // Specify the schema name
+  schemaFilter: ['elucide-v2'],
 });

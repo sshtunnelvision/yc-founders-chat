@@ -1,1 +1,1 @@
-ALTER TABLE "Chat" ADD COLUMN "visibility" varchar DEFAULT 'private' NOT NULL;
+ALTER TABLE "elucide-v2"."Chat" ADD COLUMN "visibility" varchar DEFAULT 'private' NOT NULL;

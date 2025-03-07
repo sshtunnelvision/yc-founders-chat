@@ -3,20 +3,30 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import postgres from 'postgres';
 
+// Load production environment variables
 config({
-  path: '.env.local',
+  path: '.env.production',
 });
 
 const SCHEMA_NAME = 'elucide-v2';
 
-const runMigrate = async () => {
+const runMigrateProd = async () => {
   if (!process.env.POSTGRES_URL) {
-    throw new Error('POSTGRES_URL is not defined');
+    throw new Error('POSTGRES_URL is not defined in production environment');
+  }
+
+  console.log('⏳ Running migrations in PRODUCTION environment...');
+  console.log('🔄 This will migrate the database at:', process.env.POSTGRES_URL);
+
+  // Confirm before proceeding
+  if (process.env.CONFIRM_PROD_MIGRATION !== 'true') {
+    console.error('❌ Production migration requires CONFIRM_PROD_MIGRATION=true environment variable');
+    console.error('ℹ️ This is a safety measure to prevent accidental production migrations');
+    process.exit(1);
   }
 
   const connection = postgres(process.env.POSTGRES_URL, { max: 1 });
   
-  console.log('⏳ Running migrations...');
   const start = Date.now();
   
   try {
@@ -43,7 +53,7 @@ const runMigrate = async () => {
     });
     
     const end = Date.now();
-    console.log('✅ Migrations completed in', end - start, 'ms');
+    console.log('✅ Production migrations completed in', end - start, 'ms');
 
     // Verify tables were created
     const tables = await connection`
@@ -55,7 +65,7 @@ const runMigrate = async () => {
     console.log('📊 Created tables:', tables.map(t => t.table_name));
 
   } catch (error) {
-    console.error('❌ Migration failed', error);
+    console.error('❌ Production migration failed', error);
     process.exit(1);
   } finally {
     await connection.end();
@@ -64,8 +74,8 @@ const runMigrate = async () => {
   process.exit(0);
 };
 
-runMigrate().catch((err) => {
-  console.error('❌ Migration failed');
+runMigrateProd().catch((err) => {
+  console.error('❌ Production migration failed');
   console.error(err);
   process.exit(1);
 });

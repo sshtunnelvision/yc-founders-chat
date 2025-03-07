@@ -1,1 +1,1 @@
-ALTER TABLE "Document" ADD COLUMN "text" varchar DEFAULT 'text' NOT NULL;
+ALTER TABLE "elucide-v2"."Document" ADD COLUMN "text" varchar DEFAULT 'text' NOT NULL;

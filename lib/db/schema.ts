@@ -9,9 +9,12 @@ import {
   primaryKey,
   foreignKey,
   boolean,
+  pgSchema,
 } from 'drizzle-orm/pg-core';
 
-export const user = pgTable('User', {
+const elucideSchema = pgSchema('elucide-v2');
+
+export const user = elucideSchema.table('User', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
   email: varchar('email', { length: 64 }).notNull(),
   password: varchar('password', { length: 64 }),
@@ -19,7 +22,7 @@ export const user = pgTable('User', {
 
 export type User = InferSelectModel<typeof user>;
 
-export const chat = pgTable('Chat', {
+export const chat = elucideSchema.table('Chat', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
   createdAt: timestamp('createdAt').notNull(),
   title: text('title').notNull(),
@@ -34,7 +37,7 @@ export const chat = pgTable('Chat', {
 
 export type Chat = InferSelectModel<typeof chat>;
 
-export const message = pgTable('Message', {
+export const message = elucideSchema.table('Message', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
   chatId: uuid('chatId')
     .notNull()
@@ -46,7 +49,7 @@ export const message = pgTable('Message', {
 
 export type Message = InferSelectModel<typeof message>;
 
-export const vote = pgTable(
+export const vote = elucideSchema.table(
   'Vote',
   {
     chatId: uuid('chatId')
@@ -66,7 +69,7 @@ export const vote = pgTable(
 
 export type Vote = InferSelectModel<typeof vote>;
 
-export const document = pgTable(
+export const document = elucideSchema.table(
   'Document',
   {
     id: uuid('id').notNull().defaultRandom(),
@@ -89,7 +92,7 @@ export const document = pgTable(
 
 export type Document = InferSelectModel<typeof document>;
 
-export const suggestion = pgTable(
+export const suggestion = elucideSchema.table(
   'Suggestion',
   {
     id: uuid('id').notNull().defaultRandom(),

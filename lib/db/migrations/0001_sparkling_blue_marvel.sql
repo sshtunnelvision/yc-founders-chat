@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "Suggestion" (
+CREATE TABLE IF NOT EXISTS "elucide-v2"."Suggestion" (
 	"id" uuid DEFAULT gen_random_uuid() NOT NULL,
 	"documentId" uuid NOT NULL,
 	"documentCreatedAt" timestamp NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS "Suggestion" (
 	CONSTRAINT "Suggestion_id_pk" PRIMARY KEY("id")
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "Document" (
+CREATE TABLE IF NOT EXISTS "elucide-v2"."Document" (
 	"id" uuid DEFAULT gen_random_uuid() NOT NULL,
 	"createdAt" timestamp NOT NULL,
 	"title" text NOT NULL,
@@ -21,19 +21,19 @@ CREATE TABLE IF NOT EXISTS "Document" (
 );
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "Suggestion" ADD CONSTRAINT "Suggestion_userId_User_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "elucide-v2"."Suggestion" ADD CONSTRAINT "Suggestion_userId_User_id_fk" FOREIGN KEY ("userId") REFERENCES "elucide-v2"."User"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "Suggestion" ADD CONSTRAINT "Suggestion_documentId_documentCreatedAt_Document_id_createdAt_fk" FOREIGN KEY ("documentId","documentCreatedAt") REFERENCES "public"."Document"("id","createdAt") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "elucide-v2"."Suggestion" ADD CONSTRAINT "Suggestion_documentId_documentCreatedAt_Document_id_createdAt_fk" FOREIGN KEY ("documentId","documentCreatedAt") REFERENCES "elucide-v2"."Document"("id","createdAt") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "Document" ADD CONSTRAINT "Document_userId_User_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "elucide-v2"."Document" ADD CONSTRAINT "Document_userId_User_id_fk" FOREIGN KEY ("userId") REFERENCES "elucide-v2"."User"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
