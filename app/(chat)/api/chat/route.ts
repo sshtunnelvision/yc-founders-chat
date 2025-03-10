@@ -26,6 +26,7 @@ import { createDocument } from '@/lib/ai/tools/create-document';
 import { updateDocument } from '@/lib/ai/tools/update-document';
 import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
 import { getWeather } from '@/lib/ai/tools/get-weather';
+import { queryFounders } from '@/lib/ai/tools/query-founders';
 
 export const maxDuration = 60;
 
@@ -75,6 +76,7 @@ export async function POST(request: Request) {
                 'createDocument',
                 'updateDocument',
                 'requestSuggestions',
+                'queryFounders',
               ],
         experimental_transform: smoothStream({ chunking: 'word' }),
         experimental_generateMessageId: generateUUID,
@@ -84,6 +86,9 @@ export async function POST(request: Request) {
           updateDocument: updateDocument({ session, dataStream }),
           requestSuggestions: requestSuggestions({
             session,
+            dataStream,
+          }),
+          queryFounders: queryFounders({
             dataStream,
           }),
         },

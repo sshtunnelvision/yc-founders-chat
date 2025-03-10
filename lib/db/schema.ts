@@ -10,9 +10,12 @@ import {
   foreignKey,
   boolean,
   pgSchema,
+  integer,
+  doublePrecision,
 } from 'drizzle-orm/pg-core';
 
 const elucideSchema = pgSchema('elucide-v2');
+const knowledgeSchema = pgSchema('knowledge');
 
 export const user = elucideSchema.table('User', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
@@ -117,3 +120,21 @@ export const suggestion = elucideSchema.table(
 );
 
 export type Suggestion = InferSelectModel<typeof suggestion>;
+
+export const founders = knowledgeSchema.table('founders', {
+  id: integer('id').primaryKey().notNull(),
+  sessionId: integer('session_id'),
+  pageId: integer('page_id'),
+  name: varchar('name').notNull(),
+  title: varchar('title'),
+  company: varchar('company'),
+  batch: varchar('batch'),
+  companyUrl: varchar('company_url'),
+  imageUrl: varchar('image_url'),
+  description: varchar('description'),
+  createdAt: timestamp('created_at'),
+  updatedAt: timestamp('updated_at'),
+  rawData: json('raw_data'),
+});
+
+export type Founder = InferSelectModel<typeof founders>;

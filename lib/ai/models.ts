@@ -10,6 +10,7 @@ export const myProvider = customProvider({
     // OpenAI Models
     'gpt-4o-mini': openai('gpt-4o-mini'),
     'gpt-4o': openai('gpt-4o'),
+    'gpt-4.5-preview': openai('gpt-4.5-preview-2025-02-27'),
     'title-model': openai('gpt-4o'),
     'artifact-model': openai('gpt-4o'),
 
@@ -43,6 +44,13 @@ export const chatModels: Array<ChatModel> = [
     description: 'Lightweight OpenAI model',
     available: true,
     artifacts: ['text', 'code'] as Array<ArtifactType>,
+  },
+  {
+    id: 'gpt-4.5-preview',
+    name: 'GPT-4.5 Preview',
+    description: 'Latest OpenAI preview model with enhanced capabilities',
+    available: true,
+    artifacts: ['text', 'code', 'image', 'sheet'] as Array<ArtifactType>,
   },
   {
     id: 'gpt-4o',

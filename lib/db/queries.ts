@@ -15,6 +15,8 @@ import {
   type Message,
   message,
   vote,
+  founders,
+  type Founder,
 } from './schema';
 import { ArtifactKind } from '@/components/artifact';
 
@@ -359,6 +361,29 @@ export async function toggleChatPinned({ chatId }: { chatId: string }) {
       .where(eq(chat.id, chatId));
   } catch (error) {
     console.error('Failed to toggle chat pinned status in database');
+    throw error;
+  }
+}
+
+export async function executeFoundersQuery(sqlQuery: string): Promise<unknown> {
+  try {
+    // Use the POSTGRES_URL from environment variables
+    const client = postgres(process.env.POSTGRES_URL || '');
+    const db = drizzle(client);
+    
+    // Make sure the query targets the knowledge schema
+    // If the query doesn't explicitly specify the schema, prepend it
+    let modifiedQuery = sqlQuery;
+    if (!sqlQuery.toLowerCase().includes('knowledge.founders')) {
+      modifiedQuery = sqlQuery.replace(/\bfounders\b/g, 'knowledge.founders');
+    }
+    
+    // Execute the raw SQL query
+    const results = await db.execute(modifiedQuery);
+    
+    return results;
+  } catch (error) {
+    console.error('Error executing founders query:', error);
     throw error;
   }
 }

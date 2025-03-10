@@ -13,6 +13,7 @@ import { Markdown } from "./markdown";
 import { MessageActions } from "./message-actions";
 import { PreviewAttachment } from "./preview-attachment";
 import { Weather } from "./weather";
+import { FoundersQuery } from "./founders-query";
 import equal from "fast-deep-equal";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
@@ -27,6 +28,64 @@ const PulsingCircle = () => (
     <div className="relative size-2.5 bg-primary rounded-full" />
   </div>
 );
+
+const StepUpdate = ({ step, message }: { step: string; message: string }) => {
+  return (
+    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+      {step === "querying" && (
+        <svg
+          className="animate-spin -ml-1 mr-2 size-4"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          ></circle>
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          ></path>
+        </svg>
+      )}
+      {step === "results" && (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="size-4 text-green-500"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fillRule="evenodd"
+            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+            clipRule="evenodd"
+          />
+        </svg>
+      )}
+      {step === "error" && (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="size-4 text-red-500"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fillRule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+            clipRule="evenodd"
+          />
+        </svg>
+      )}
+      <span>{message}</span>
+    </div>
+  );
+};
 
 const PurePreviewMessage = ({
   chatId,
@@ -50,6 +109,55 @@ const PurePreviewMessage = ({
   isReadonly: boolean;
 }) => {
   const [mode, setMode] = useState<"view" | "edit">("view");
+
+  // Get the founder query invocations
+  const founderQueries = message.toolInvocations?.filter(
+    (ti) => ti.toolName === "queryFounders"
+  );
+
+  // Get step updates from in-progress queries
+  const stepUpdates =
+    founderQueries
+      ?.filter((ti) => ti.state !== "result")
+      .map((ti) => {
+        if (ti.args?.content?.step) {
+          return ti.args.content;
+        }
+        return { step: "querying", message: "Querying database..." };
+      }) || [];
+
+  // Get completed query results
+  const queryResults =
+    founderQueries
+      ?.filter((ti) => ti.state === "result")
+      .map((ti) => ti.result) || [];
+
+  // Determine what content to display
+  const hasCompletedQuery = queryResults.length > 0;
+  const isInitialResponse = message.content
+    ?.toLowerCase()
+    .includes("based on the query results");
+
+  // Show content if we have a message and either:
+  // 1. It's not a query-related message, or
+  // 2. We have completed results and it's the summary
+  const shouldShowContent =
+    message.content &&
+    (!message.content.toLowerCase().includes("look for founders") ||
+      (hasCompletedQuery && isInitialResponse));
+
+  // Combine step updates with results
+  const allUpdates = [
+    ...stepUpdates,
+    ...(queryResults.length > 0
+      ? [
+          {
+            step: "results",
+            message: `Found ${queryResults[0].results.length} results`,
+          },
+        ]
+      : []),
+  ];
 
   return (
     <AnimatePresence>
@@ -87,7 +195,20 @@ const PurePreviewMessage = ({
               />
             )}
 
-            {(message.content || message.reasoning) && mode === "view" && (
+            {allUpdates.length > 0 && (
+              <div className="flex flex-col gap-2">
+                {allUpdates.map((update, index) => (
+                  <StepUpdate
+                    key={`${update.step}-${index}`}
+                    step={update.step}
+                    message={update.message}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Show the content (including summary) with proper streaming */}
+            {shouldShowContent && mode === "view" && (
               <div className="flex flex-row gap-2 items-start">
                 {message.role === "user" && !isReadonly && (
                   <Tooltip>
@@ -112,7 +233,7 @@ const PurePreviewMessage = ({
                       message.role === "user",
                   })}
                 >
-                  <Markdown>{message.content as string}</Markdown>
+                  <Markdown>{message.content}</Markdown>
                 </div>
               </div>
             )}
@@ -131,70 +252,68 @@ const PurePreviewMessage = ({
               </div>
             )}
 
-            {message.toolInvocations && message.toolInvocations.length > 0 && (
-              <div className="flex flex-col gap-4">
-                {message.toolInvocations.map((toolInvocation) => {
-                  const { toolName, toolCallId, state, args } = toolInvocation;
+            {message.toolInvocations
+              ?.filter((ti) => ti.toolName !== "queryFounders")
+              .map((toolInvocation) => {
+                const { toolName, toolCallId, state, args } = toolInvocation;
 
-                  if (state === "result") {
-                    const { result } = toolInvocation;
-
-                    return (
-                      <div key={toolCallId}>
-                        {toolName === "getWeather" ? (
-                          <Weather weatherAtLocation={result} />
-                        ) : toolName === "createDocument" ? (
-                          <DocumentPreview
-                            isReadonly={isReadonly}
-                            result={result}
-                          />
-                        ) : toolName === "updateDocument" ? (
-                          <DocumentToolResult
-                            type="update"
-                            result={result}
-                            isReadonly={isReadonly}
-                          />
-                        ) : toolName === "requestSuggestions" ? (
-                          <DocumentToolResult
-                            type="request-suggestions"
-                            result={result}
-                            isReadonly={isReadonly}
-                          />
-                        ) : (
-                          <pre>{JSON.stringify(result, null, 2)}</pre>
-                        )}
-                      </div>
-                    );
-                  }
+                if (state === "result") {
+                  const { result } = toolInvocation;
                   return (
-                    <div
-                      key={toolCallId}
-                      className={cx({
-                        skeleton: ["getWeather"].includes(toolName),
-                      })}
-                    >
+                    <div key={toolCallId}>
                       {toolName === "getWeather" ? (
-                        <Weather />
+                        <Weather weatherAtLocation={result} />
                       ) : toolName === "createDocument" ? (
-                        <DocumentPreview isReadonly={isReadonly} args={args} />
+                        <DocumentPreview
+                          isReadonly={isReadonly}
+                          result={result}
+                        />
                       ) : toolName === "updateDocument" ? (
-                        <DocumentToolCall
+                        <DocumentToolResult
                           type="update"
-                          args={args}
+                          result={result}
                           isReadonly={isReadonly}
                         />
                       ) : toolName === "requestSuggestions" ? (
-                        <DocumentToolCall
+                        <DocumentToolResult
                           type="request-suggestions"
-                          args={args}
+                          result={result}
                           isReadonly={isReadonly}
                         />
-                      ) : null}
+                      ) : (
+                        <pre>{JSON.stringify(result, null, 2)}</pre>
+                      )}
                     </div>
                   );
-                })}
-              </div>
-            )}
+                }
+
+                return (
+                  <div
+                    key={toolCallId}
+                    className={cx({
+                      skeleton: ["getWeather"].includes(toolName),
+                    })}
+                  >
+                    {toolName === "getWeather" ? (
+                      <Weather />
+                    ) : toolName === "createDocument" ? (
+                      <DocumentPreview isReadonly={isReadonly} args={args} />
+                    ) : toolName === "updateDocument" ? (
+                      <DocumentToolCall
+                        type="update"
+                        args={args}
+                        isReadonly={isReadonly}
+                      />
+                    ) : toolName === "requestSuggestions" ? (
+                      <DocumentToolCall
+                        type="request-suggestions"
+                        args={args}
+                        isReadonly={isReadonly}
+                      />
+                    ) : null}
+                  </div>
+                );
+              })}
 
             {!isReadonly && (
               <MessageActions
