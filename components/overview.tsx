@@ -14,7 +14,14 @@ export const Overview = () => {
       transition={{ delay: 0.5 }}
     >
       <div className="rounded-xl p-6 flex flex-col gap-8 leading-relaxed text-center max-w-xl">
-        <h1 className="text-2xl font-bold">elucide v1</h1>
+        <h1 className="text-2xl font-light">YC Founder&apos;s Chat</h1>
+        <p className="text-muted-foreground">
+          Explore and learn about Y Combinator founders and their companies
+          through an intelligent chat interface.
+        </p>
+        <p className="text-xs text-muted-foreground mt-4">
+          Not affiliated with Y Combinator or any of its subsidiaries.
+        </p>
       </div>
     </motion.div>
   );

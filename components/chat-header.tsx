@@ -20,7 +20,7 @@ export function ChatHeader({ className, ...props }: ComponentProps<"header">) {
       {...props}
     >
       <div className="font-light text-sm tracking-wide">
-        elucide v1 - yc founder&apos;s chat
+        YC Founder&apos;s Chat
       </div>
       <div className="flex items-center gap-2">
         <Button
