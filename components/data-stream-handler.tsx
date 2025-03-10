@@ -88,7 +88,44 @@ export function DataStreamHandler({ id }: { id: string }) {
             };
 
           case "error":
-            toast.error(delta.content as string);
+            // Check for max tokens error
+            const errorContent = delta.content as string;
+            console.log("Data stream error content:", errorContent);
+
+            // Direct check for the generic error message
+            const isGenericError = errorContent === "Oops, an error occured!";
+
+            // Check for specific token limit errors if not the generic error
+            let isMaxTokensError = false;
+            if (!isGenericError) {
+              const maxTokensErrorPatterns = [
+                "maximum context length",
+                "context_length_exceeded",
+                "maximum token limit",
+                "token limit exceeded",
+              ];
+
+              isMaxTokensError = maxTokensErrorPatterns.some(
+                (pattern) =>
+                  errorContent &&
+                  typeof errorContent === "string" &&
+                  errorContent.toLowerCase().includes(pattern.toLowerCase())
+              );
+            }
+
+            if (isGenericError || isMaxTokensError) {
+              toast.error("Maximum token limit exceeded", {
+                description:
+                  "Please use the database to query for specific information about YC founders instead of asking for large amounts of data at once.",
+                duration: 5000,
+              });
+            } else {
+              toast.error(
+                typeof errorContent === "string"
+                  ? errorContent
+                  : "An error occurred"
+              );
+            }
             return {
               ...draftArtifact,
               status: "idle",

@@ -29,26 +29,10 @@ const PulsingCircle = () => (
   </div>
 );
 
-const StepUpdate = ({
-  step,
-  message,
-  results,
-}: {
-  step: string;
-  message: string;
-  results?: any[];
-}) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-
+const StepUpdate = ({ step, message }: { step: string; message: string }) => {
   return (
     <div className="flex flex-col gap-2">
-      <div
-        className={cn(
-          "flex items-center gap-2 text-sm text-muted-foreground",
-          results && "cursor-pointer hover:text-foreground transition-colors"
-        )}
-        onClick={() => results && setIsExpanded(!isExpanded)}
-      >
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
         {step === "querying" && (
           <svg
             className="animate-spin -ml-1 mr-2 size-4"
@@ -85,16 +69,6 @@ const StepUpdate = ({
                 clipRule="evenodd"
               />
             </svg>
-            {results && (
-              <div
-                className={cn(
-                  "transition-transform duration-200",
-                  isExpanded && "rotate-180"
-                )}
-              >
-                <ChevronDownIcon size={16} />
-              </div>
-            )}
           </div>
         )}
         {step === "error" && (
@@ -113,47 +87,6 @@ const StepUpdate = ({
         )}
         <span>{message}</span>
       </div>
-
-      {/* Expandable results section */}
-      {results && isExpanded && (
-        <motion.div
-          initial={{ height: 0, opacity: 0 }}
-          animate={{ height: "auto", opacity: 1 }}
-          exit={{ height: 0, opacity: 0 }}
-          className="ml-6 pl-4"
-        >
-          <div className="max-h-[300px] overflow-y-auto rounded-md border border-border bg-card">
-            <div className="divide-y divide-border">
-              {results.map((result, idx) => (
-                <div
-                  key={idx}
-                  className="px-4 py-2 text-sm text-muted-foreground hover:bg-muted/50"
-                >
-                  {result.company && (
-                    <>
-                      <span className="font-medium text-foreground">
-                        {result.company}
-                      </span>
-                      {result.name && (
-                        <>
-                          {" "}
-                          - {result.name}
-                          {result.title && ` (${result.title})`}
-                        </>
-                      )}
-                      {result.batch && (
-                        <span className="text-muted-foreground ml-1">
-                          ({result.batch} batch)
-                        </span>
-                      )}
-                    </>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-      )}
     </div>
   );
 };
@@ -196,7 +129,7 @@ const PurePreviewMessage = ({
         }
         return {
           step: "querying",
-          message: "querying y-combinator founders database...",
+          message: "Querying YC founders database...",
         };
       }) || [];
 
@@ -220,15 +153,14 @@ const PurePreviewMessage = ({
     (!message.content.toLowerCase().includes("look for founders") ||
       (hasCompletedQuery && isInitialResponse));
 
-  // Combine step updates with results
+  // Include step updates and a results step (without the actual results data)
   const allUpdates = [
     ...stepUpdates,
-    ...(queryResults.length > 0 && queryResults[0]?.results
+    ...(queryResults.length > 0
       ? [
           {
             step: "results",
             message: `Found ${queryResults[0].results.length} results`,
-            results: queryResults[0].results,
           },
         ]
       : []),
@@ -277,7 +209,6 @@ const PurePreviewMessage = ({
                     key={`${update.step}-${index}`}
                     step={update.step}
                     message={update.message}
-                    results={update.results}
                   />
                 ))}
               </div>

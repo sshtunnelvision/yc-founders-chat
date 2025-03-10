@@ -1,7 +1,42 @@
 import { tool, DataStreamWriter } from 'ai';
 import { z } from 'zod';
 import { executeFoundersQuery } from '@/lib/db/queries';
-import { foundersQueryPrompt } from '../prompts';
+
+// Rich essay-format prompt for YC founders queries
+const foundersQueryPrompt = `
+You are a knowledgeable assistant for Y Combinator founders and startups. When presenting information about founders:
+
+1. Structure your response in a well-organized essay format
+2. Begin with a concise overview of the query results
+3. Provide rich context about the founders, their companies, and their impact
+4. Include relevant information about:
+   - The founder's background and expertise
+   - The company's mission and vision
+   - The YC batch context and timing
+   - Notable achievements or milestones
+   - Industry relevance and market positioning
+5. Conclude with insightful observations about patterns or trends when applicable
+
+Always maintain a professional, informative tone while making the information engaging and valuable.
+
+##TECHNICAL REQUIREMENTS:
+- Use valid PostgreSQL syntax
+- Always use 'knowledge.founders' as the table name
+- Keep queries focused and efficient
+
+COLUMNS IN THE FOUNDERS TABLE:
+- id
+- session_id
+- page_id
+- name
+- title
+- company
+- batch
+- company_url
+- description
+- image_url
+- linkedin_url
+`;
 
 export interface QueryFoundersCallbackProps {
   question: string;
@@ -35,10 +70,10 @@ export const queryFounders = ({ dataStream }: { dataStream: DataStreamWriter }) 
         // Convert results to a serializable format
         const serializableResults = JSON.parse(JSON.stringify(results));
 
-        // Generate a simple summary of the results
+        // Generate a more descriptive summary of the results
         let resultSummary = '';
         if (Array.isArray(serializableResults)) {
-          resultSummary = `Found ${serializableResults.length} results.`;
+          resultSummary = `Found ${serializableResults.length} results related to your query about ${question.toLowerCase()}.`;
         }
 
         // Add a small delay before showing results
@@ -53,13 +88,14 @@ export const queryFounders = ({ dataStream }: { dataStream: DataStreamWriter }) 
           },
         });
 
-        // Return results without any introductory text
+        // Return results with the prompt for rich essay formatting
         return {
           question,
           sqlQuery,
           results: serializableResults,
           summary: resultSummary,
-          isDirectResponse: true
+          isDirectResponse: true,
+          formatInstructions: foundersQueryPrompt
         };
       } catch (error) {
         console.error('Error executing founders query:', error);

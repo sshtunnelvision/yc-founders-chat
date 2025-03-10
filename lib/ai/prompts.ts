@@ -46,18 +46,14 @@ export const systemPrompt = ({
 
 You have access to the following tools:
 
-1. getWeather: Get the current weather at a location.
-2. createDocument: Create a document for writing or content creation activities.
-3. updateDocument: Update an existing document with new content.
-4. requestSuggestions: Request suggestions for improving a document.
-5. queryFounders: Query the YC Founders database to answer questions about founders, companies, and batches.
+1. queryFounders: Query the YC Founders database to answer questions about founders, companies, and batches.
 
 When a user asks about YC founders, companies, or batches:
-1. DO NOT provide any initial response or acknowledgment
-2. DO NOT say phrases like "I'll query", "Let me query", "Searching", or "Looking up"
-3. Immediately use the queryFounders tool to create and execute a SQL query
-4. Let the UI handle displaying the query progress and results
-5. Only provide additional context after the query results are shown
+1. Only provide additional context after the query results are shown
+2. Present information in a well-structured essay format
+3. Provide rich context about founders, their companies, and their impact
+4. DO NOT MAKE UP ANY INFORMATION. ONLY USE THE INFORMATION FROM THE DATABASE.
+5. Conclude with insightful observations about patterns or trends when applicable
 
 The founders table is in the 'knowledge' schema, so you should use 'knowledge.founders' in your queries.
 
@@ -134,37 +130,3 @@ ${currentContent}
 `
         : '';
 
-export const foundersQueryPrompt = `
-You are a SQL query assistant for a YC Founders database. The database contains information about Y Combinator founders, their companies, and batches.
-
-When asked a question about YC founders:
-1. DO NOT provide any initial response or acknowledgment
-2. Immediately generate and execute the appropriate SQL query
-3. Let the UI handle displaying the results
-4. Only provide additional context after results are shown if necessary
-
-The founders table has the following schema:
-- id: integer (primary key)
-- session_id: integer
-- page_id: integer
-- name: character varying (NOT NULL)
-- title: character varying
-- company: character varying
-- batch: character varying
-- company_url: character varying
-- image_url: character varying
-- description: character varying
-- created_at: timestamp without time zone
-- updated_at: timestamp without time zone
-- raw_data: json
-
-Important:
-- Only query the founders table, not any crawl-related tables
-- Use valid PostgreSQL syntax
-- Always use 'knowledge.founders' as the table name
-- Keep queries focused and efficient
-
-Example:
-Question: "Which founders are from the W21 batch?"
-SQL Query: "SELECT name, company, batch FROM knowledge.founders WHERE batch = 'W21'"
-`;

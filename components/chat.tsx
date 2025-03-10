@@ -17,10 +17,66 @@ import { useArtifactSelector } from "@/hooks/use-artifact";
 import { toast } from "sonner";
 
 const getErrorMessage = (error: any) => {
-  if (typeof error === "object" && error.responseBody) {
+  console.log("Error object:", error);
+
+  // Check for max tokens error in various formats
+  const maxTokensErrorMessages = [
+    "maximum context length",
+    "context_length_exceeded",
+    "maximum token limit",
+    "token limit exceeded",
+  ];
+
+  // Function to check if any of the error messages are included in a string
+  const containsMaxTokensError = (str: string) => {
+    if (!str) return false;
+    return maxTokensErrorMessages.some((msg) =>
+      str.toLowerCase().includes(msg.toLowerCase())
+    );
+  };
+
+  // Check if error is a simple Error object with the generic message
+  if (error instanceof Error && error.message === "Oops, an error occured!") {
+    console.log("Found generic error that might be a max tokens error");
+    return {
+      title: "Maximum token limit exceeded",
+      description:
+        "Please use the database to query for specific information about YC founders instead of asking for large amounts of data at once.",
+    };
+  }
+
+  // Check error.message (direct property)
+  if (error?.message && containsMaxTokensError(error.message)) {
+    console.log("Found max tokens error in error.message");
+    return {
+      title: "Maximum token limit exceeded",
+      description:
+        "Please use the database to query for specific information about YC founders instead of asking for large amounts of data at once.",
+    };
+  }
+
+  // Check error.responseBody (as string)
+  if (error?.responseBody && typeof error.responseBody === "string") {
+    // Try to parse responseBody as JSON
     try {
-      const parsedError = JSON.parse(error.responseBody);
-      if (parsedError.error?.message?.includes("string too long")) {
+      const parsedBody = JSON.parse(error.responseBody);
+
+      // Check for context length exceeded error in parsed JSON
+      if (
+        (parsedBody?.error?.message &&
+          containsMaxTokensError(parsedBody.error.message)) ||
+        parsedBody?.error?.code === "context_length_exceeded"
+      ) {
+        console.log("Found max tokens error in parsed responseBody");
+        return {
+          title: "Maximum token limit exceeded",
+          description:
+            "Please use the database to query for specific information about YC founders instead of asking for large amounts of data at once.",
+        };
+      }
+
+      // Check for string too long error
+      if (parsedBody?.error?.message?.includes("string too long")) {
         return {
           title: "Message too long",
           description:
@@ -31,6 +87,8 @@ const getErrorMessage = (error: any) => {
       // Parse error, fall through to default
     }
   }
+
+  // Default error message
   return {
     title: "An error occurred",
     description: "Please try again",
