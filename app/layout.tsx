@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Toaster } from "sonner";
 
 import { ThemeProvider } from "@/components/theme-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 import "./globals.css";
 
@@ -56,15 +57,17 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body className="antialiased min-h-screen bg-zinc-950 bg-[url('/images/light-bg-1.png')] dark:bg-[url('/images/dark-bg-1.png')] bg-cover bg-center bg-fixed bg-no-repeat">
+      <body className="antialiased min-h-screen bg-amber-50 dark:bg-zinc-950 bg-fixed">
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="light"
+          enableSystem={false}
           disableTransitionOnChange
         >
-          <Toaster position="top-center" />
-          {children}
+          <TooltipProvider>
+            <Toaster position="top-center" />
+            {children}
+          </TooltipProvider>
         </ThemeProvider>
       </body>
     </html>

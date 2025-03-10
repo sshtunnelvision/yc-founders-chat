@@ -16,25 +16,24 @@ interface SuggestedActionsProps {
 function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
   const suggestedActions = [
     {
-      title: "Create a weekly meal plan as an excel sheet",
-      label: "based on a healthy carnivore diet",
-      action:
-        "Create a weekly meal plan as an excel sheet based on a healthy carnivore diet",
+      title: "Which was YC's largest batch",
+      label: "in terms of number of founders?",
+      action: "Which was YC's largest batch in terms of number of founders?",
     },
     {
-      title: "Which algorithmic trading strategies",
-      label: `are the best for the S&P 500?`,
-      action: `Which algorithmic trading strategy are the best for the S&P 500?`,
+      title: "Show me founders who",
+      label: `started companies in the healthcare space`,
+      action: `Show me founders who started companies in the healthcare space`,
     },
     {
-      title: "Help me create an engaging blog post",
-      label: `about deep learning`,
-      action: `Help me create an engaging blog post about deep learning`,
+      title: "Find companies with",
+      label: `'AI' or 'artificial intelligence' in their description`,
+      action: `Find companies with 'AI' or 'artificial intelligence' in their description`,
     },
     {
-      title: "What is the weather",
-      label: "in New York City?",
-      action: "What is the weather in New York City?",
+      title: "Show me founders",
+      label: "who were CEOs or co-founders",
+      action: "Show me founders who were CEOs or co-founders",
     },
   ];
 
@@ -62,9 +61,7 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
             className="text-left border rounded-xl px-4 py-3.5 text-sm flex-1 gap-1 sm:flex-col w-full h-auto justify-start items-start"
           >
             <span className="font-medium">{suggestedAction.title}</span>
-            <span className="text-muted-foreground">
-              {suggestedAction.label}
-            </span>
+            <span>{suggestedAction.label}</span>
           </Button>
         </motion.div>
       ))}

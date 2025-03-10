@@ -3,7 +3,7 @@ import { anthropic } from '@ai-sdk/anthropic';
 import { google } from '@ai-sdk/google';
 import { customProvider } from 'ai';
 
-export const DEFAULT_CHAT_MODEL: string = 'gpt-4o';
+export const DEFAULT_CHAT_MODEL: string = 'gpt-4o-mini';
 
 export const myProvider = customProvider({
   languageModels: {

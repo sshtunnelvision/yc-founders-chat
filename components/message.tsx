@@ -194,7 +194,10 @@ const PurePreviewMessage = ({
         if (ti.args?.content?.step) {
           return ti.args.content;
         }
-        return { step: "querying", message: "Querying database..." };
+        return {
+          step: "querying",
+          message: "querying y-combinator founders database...",
+        };
       }) || [];
 
   // Get completed query results
@@ -302,7 +305,7 @@ const PurePreviewMessage = ({
 
                 <div
                   className={cn("flex flex-col gap-4", {
-                    "bg-zinc-200 dark:bg-zinc-800 px-3 py-2 rounded-xl":
+                    "bg-orange-100 dark:bg-zinc-800 px-3 py-2 rounded-xl":
                       message.role === "user",
                   })}
                 >

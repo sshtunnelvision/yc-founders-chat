@@ -1,80 +1,48 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useWindowSize } from "usehooks-ts";
+import { type ComponentProps } from "react";
+import { signOut } from "next-auth/react";
+import { LogOut } from "lucide-react";
+import { Button } from "./ui/button";
+import { PlusIcon } from "./icons";
+import { cn } from "@/lib/utils";
 
-import { ModelSelector } from "@/components/model-selector";
-import { SidebarToggle } from "@/components/sidebar-toggle";
-import { Button } from "@/components/ui/button";
-import { PlusIcon, VercelIcon } from "./icons";
-import { useSidebar } from "./ui/sidebar";
-import { memo } from "react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
-import { VisibilityType, VisibilitySelector } from "./visibility-selector";
-
-function PureChatHeader({
-  chatId,
-  selectedModelId,
-  selectedVisibilityType,
-  isReadonly,
-}: {
-  chatId: string;
-  selectedModelId: string;
-  selectedVisibilityType: VisibilityType;
-  isReadonly: boolean;
-}) {
+export function ChatHeader({ className, ...props }: ComponentProps<"header">) {
   const router = useRouter();
-  const { open } = useSidebar();
-
-  const { width: windowWidth } = useWindowSize();
 
   return (
-    <header className="flex sticky top-0   py-1.5 items-center px-2 md:px-2 gap-2">
-      <SidebarToggle />
-
-      {(!open || windowWidth < 768) && (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline"
-              className="order-2 md:order-1 md:px-2 px-2 md:h-fit ml-auto md:ml-0"
-              onClick={() => {
-                router.push("/");
-                router.refresh();
-              }}
-            >
-              <PlusIcon />
-              <span className="md:sr-only">New Chat</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>New Chat</TooltipContent>
-        </Tooltip>
+    <header
+      className={cn(
+        "sticky top-0 z-50 flex h-12 w-full shrink-0 items-center justify-between px-4 bg-transparent",
+        className
       )}
-
-      {!isReadonly && (
-        <ModelSelector
-          selectedModelId={selectedModelId}
-          className="order-1 md:order-2"
-        />
-      )}
-
-      {!isReadonly && (
-        <VisibilitySelector
-          chatId={chatId}
-          selectedVisibilityType={selectedVisibilityType}
-          className="order-1 md:order-3"
-        />
-      )}
-
-      <Button
-        className="bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-zinc-50 dark:text-zinc-900 hidden md:flex py-1.5 px-2 h-fit md:h-[34px] order-4 md:ml-auto"
-        asChild
-      ></Button>
+      {...props}
+    >
+      <div className="font-light text-sm tracking-wide">
+        elucide v1 - yc founder&apos;s chat
+      </div>
+      <div className="flex items-center gap-2">
+        <Button
+          variant="ghost"
+          onClick={() => {
+            router.push("/");
+            router.refresh();
+          }}
+          className="h-8 gap-2"
+        >
+          <PlusIcon />
+          <span className="font-light">New Chat</span>
+        </Button>
+        <Button
+          variant="ghost"
+          onClick={() => signOut({ redirectTo: "/" })}
+          className="h-8 gap-2"
+        >
+          <LogOut className="h-4 w-4" />
+          <span className="font-light">Logout</span>
+        </Button>
+      </div>
     </header>
   );
 }
-
-export const ChatHeader = memo(PureChatHeader, (prevProps, nextProps) => {
-  return prevProps.selectedModelId === nextProps.selectedModelId;
-});
