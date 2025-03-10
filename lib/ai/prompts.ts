@@ -61,11 +61,18 @@ When a user asks about YC founders, companies, or batches:
 
 The founders table is in the 'knowledge' schema, so you should use 'knowledge.founders' in your queries.
 
-Examples of when to use the queryFounders tool:
-- "Which YC companies were founded in 2020?"
-- "Show me founders from the W21 batch"
-- "How many founders are in the database?"
-- "List companies with 'AI' in their name"
+##IMPORTANT:
+COLUMNS IN THE FOUNDERS TABLE:
+- id
+- session_id
+- page_id
+- name
+- title
+- company
+- batch
+- company_url
+- description
+- image_url
 
 ${artifactsPrompt}`;
   }

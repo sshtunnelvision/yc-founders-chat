@@ -29,60 +29,131 @@ const PulsingCircle = () => (
   </div>
 );
 
-const StepUpdate = ({ step, message }: { step: string; message: string }) => {
+const StepUpdate = ({
+  step,
+  message,
+  results,
+}: {
+  step: string;
+  message: string;
+  results?: any[];
+}) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   return (
-    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-      {step === "querying" && (
-        <svg
-          className="animate-spin -ml-1 mr-2 size-4"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-          ></circle>
-          <path
-            className="opacity-75"
+    <div className="flex flex-col gap-2">
+      <div
+        className={cn(
+          "flex items-center gap-2 text-sm text-muted-foreground",
+          results && "cursor-pointer hover:text-foreground transition-colors"
+        )}
+        onClick={() => results && setIsExpanded(!isExpanded)}
+      >
+        {step === "querying" && (
+          <svg
+            className="animate-spin -ml-1 mr-2 size-4"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        )}
+        {step === "results" && (
+          <div className="flex items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="size-4 text-green-500"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clipRule="evenodd"
+              />
+            </svg>
+            {results && (
+              <div
+                className={cn(
+                  "transition-transform duration-200",
+                  isExpanded && "rotate-180"
+                )}
+              >
+                <ChevronDownIcon size={16} />
+              </div>
+            )}
+          </div>
+        )}
+        {step === "error" && (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="size-4 text-red-500"
+            viewBox="0 0 20 20"
             fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          ></path>
-        </svg>
-      )}
-      {step === "results" && (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="size-4 text-green-500"
-          viewBox="0 0 20 20"
-          fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clipRule="evenodd"
+            />
+          </svg>
+        )}
+        <span>{message}</span>
+      </div>
+
+      {/* Expandable results section */}
+      {results && isExpanded && (
+        <motion.div
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: "auto", opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          className="ml-6 pl-4"
         >
-          <path
-            fillRule="evenodd"
-            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-            clipRule="evenodd"
-          />
-        </svg>
+          <div className="max-h-[300px] overflow-y-auto rounded-md border border-border bg-card">
+            <div className="divide-y divide-border">
+              {results.map((result, idx) => (
+                <div
+                  key={idx}
+                  className="px-4 py-2 text-sm text-muted-foreground hover:bg-muted/50"
+                >
+                  {result.company && (
+                    <>
+                      <span className="font-medium text-foreground">
+                        {result.company}
+                      </span>
+                      {result.name && (
+                        <>
+                          {" "}
+                          - {result.name}
+                          {result.title && ` (${result.title})`}
+                        </>
+                      )}
+                      {result.batch && (
+                        <span className="text-muted-foreground ml-1">
+                          ({result.batch} batch)
+                        </span>
+                      )}
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
       )}
-      {step === "error" && (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="size-4 text-red-500"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            fillRule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-            clipRule="evenodd"
-          />
-        </svg>
-      )}
-      <span>{message}</span>
     </div>
   );
 };
@@ -149,11 +220,12 @@ const PurePreviewMessage = ({
   // Combine step updates with results
   const allUpdates = [
     ...stepUpdates,
-    ...(queryResults.length > 0
+    ...(queryResults.length > 0 && queryResults[0]?.results
       ? [
           {
             step: "results",
             message: `Found ${queryResults[0].results.length} results`,
+            results: queryResults[0].results,
           },
         ]
       : []),
@@ -202,6 +274,7 @@ const PurePreviewMessage = ({
                     key={`${update.step}-${index}`}
                     step={update.step}
                     message={update.message}
+                    results={update.results}
                   />
                 ))}
               </div>
