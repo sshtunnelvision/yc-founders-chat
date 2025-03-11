@@ -208,7 +208,7 @@ function PureMultimodalInput({
 
       <Textarea
         ref={textareaRef}
-        placeholder="Send a message..."
+        placeholder="Ask a question..."
         value={input}
         onChange={handleInput}
         onKeyDown={(event) => {
