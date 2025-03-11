@@ -203,7 +203,7 @@ const PurePreviewMessage = ({
             )}
 
             {allUpdates.length > 0 && (
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 mt-2">
                 {allUpdates.map((update, index) => (
                   <StepUpdate
                     key={`${update.step}-${index}`}

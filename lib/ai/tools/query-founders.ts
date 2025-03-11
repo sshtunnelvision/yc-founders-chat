@@ -21,7 +21,8 @@ Always maintain a professional, informative tone while making the information en
 
 ##TECHNICAL REQUIREMENTS:
 - Use valid PostgreSQL syntax
-- Always use 'knowledge.founders' as the table name
+- Always use 'knowledge.founders' as the main table name
+- For LinkedIn data, use 'knowledge.founder_linkedin_data' table which is related to 'knowledge.founders' via the founder_id field
 - Keep queries focused and efficient
 
 COLUMNS IN THE FOUNDERS TABLE:
@@ -36,6 +37,21 @@ COLUMNS IN THE FOUNDERS TABLE:
 - description
 - image_url
 - linkedin_url
+
+COLUMNS IN THE FOUNDER_LINKEDIN_DATA TABLE:
+- id
+- founder_id (foreign key to knowledge.founders.id)
+- headline
+- location
+- experience
+- education
+- skills
+
+EXAMPLE JOIN QUERY:
+SELECT f.*, l.headline, l.location, l.experience, l.education, l.skills 
+FROM knowledge.founders f
+LEFT JOIN knowledge.founder_linkedin_data l ON f.id = l.founder_id
+WHERE f.name LIKE '%John%'
 `;
 
 export interface QueryFoundersCallbackProps {

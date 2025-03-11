@@ -43,6 +43,17 @@ export async function POST(request: Request) {
       );
     }
 
+    // Ensure the query targets the knowledge schema
+    const validTables = ['knowledge.founders', 'knowledge.founder_linkedin_data'];
+    const hasValidTable = validTables.some(table => lowerQuery.includes(table.toLowerCase()));
+    
+    if (!hasValidTable) {
+      return new NextResponse(
+        JSON.stringify({ error: "Query must target knowledge.founders or knowledge.founder_linkedin_data tables" }),
+        { status: 400 }
+      );
+    }
+
     // Execute the query
     const results = await executeFoundersQuery(sqlQuery);
 

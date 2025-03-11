@@ -1,8 +1,8 @@
 "use client";
 
-import type { Attachment, Message } from "ai";
+import type { Attachment, Message, ChatRequestOptions } from "ai";
 import { useChat } from "ai/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useSWR, { useSWRConfig } from "swr";
 
 import { ChatHeader } from "@/components/chat-header";
@@ -15,6 +15,13 @@ import { Messages } from "./messages";
 import { VisibilityType } from "./visibility-selector";
 import { useArtifactSelector } from "@/hooks/use-artifact";
 import { toast } from "sonner";
+
+// Local storage keys
+const STORAGE_KEYS = {
+  CHAT_INPUT: (id: string) => `yc_chat_input_${id}`,
+  CHAT_ATTACHMENTS: (id: string) => `yc_chat_attachments_${id}`,
+  CHAT_DRAFT_MESSAGES: (id: string) => `yc_chat_draft_messages_${id}`,
+};
 
 const getErrorMessage = (error: any) => {
   console.log("Error object:", error);
@@ -106,6 +113,29 @@ export function Chat({
 }) {
   const { mutate } = useSWRConfig();
 
+  // Load draft messages from localStorage if available
+  const loadDraftMessages = (): Array<Message> => {
+    if (typeof window === "undefined") return initialMessages;
+
+    try {
+      const savedDraftMessages = localStorage.getItem(
+        STORAGE_KEYS.CHAT_DRAFT_MESSAGES(id)
+      );
+      if (savedDraftMessages) {
+        const parsedMessages = JSON.parse(savedDraftMessages);
+        // Only use draft messages if they're newer than initialMessages
+        // This prevents overriding server-fetched messages with older cached ones
+        if (parsedMessages.length >= initialMessages.length) {
+          return parsedMessages;
+        }
+      }
+    } catch (e) {
+      console.error("Error loading draft messages from localStorage:", e);
+    }
+
+    return initialMessages;
+  };
+
   const {
     messages,
     setMessages,
@@ -119,7 +149,7 @@ export function Chat({
   } = useChat({
     id,
     body: { id, selectedChatModel },
-    initialMessages,
+    initialMessages: loadDraftMessages(),
     experimental_throttle: 100,
     sendExtraMessageFields: true,
     generateId: generateUUID,
@@ -140,12 +170,113 @@ export function Chat({
     fetcher
   );
 
-  const [attachments, setAttachments] = useState<Array<Attachment>>([]);
+  // Initialize attachments from localStorage if available
+  const initializeAttachments = (): Array<Attachment> => {
+    if (typeof window === "undefined") return [];
+
+    try {
+      const savedAttachments = localStorage.getItem(
+        STORAGE_KEYS.CHAT_ATTACHMENTS(id)
+      );
+      if (savedAttachments) {
+        return JSON.parse(savedAttachments);
+      }
+    } catch (e) {
+      console.error("Error loading attachments from localStorage:", e);
+    }
+
+    return [];
+  };
+
+  const [attachments, setAttachments] = useState<Array<Attachment>>(
+    initializeAttachments()
+  );
   const isArtifactVisible = useArtifactSelector((state) => state.isVisible);
+
+  // Load saved input from localStorage
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    try {
+      const savedInput = localStorage.getItem(STORAGE_KEYS.CHAT_INPUT(id));
+      if (savedInput && !input) {
+        setInput(savedInput);
+      }
+    } catch (e) {
+      console.error("Error loading input from localStorage:", e);
+    }
+  }, [id, input, setInput]);
+
+  // Save input to localStorage when it changes
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    try {
+      if (input) {
+        localStorage.setItem(STORAGE_KEYS.CHAT_INPUT(id), input);
+      } else {
+        localStorage.removeItem(STORAGE_KEYS.CHAT_INPUT(id));
+      }
+    } catch (e) {
+      console.error("Error saving input to localStorage:", e);
+    }
+  }, [id, input]);
+
+  // Save attachments to localStorage when they change
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    try {
+      if (attachments.length > 0) {
+        localStorage.setItem(
+          STORAGE_KEYS.CHAT_ATTACHMENTS(id),
+          JSON.stringify(attachments)
+        );
+      } else {
+        localStorage.removeItem(STORAGE_KEYS.CHAT_ATTACHMENTS(id));
+      }
+    } catch (e) {
+      console.error("Error saving attachments to localStorage:", e);
+    }
+  }, [id, attachments]);
+
+  // Save draft messages to localStorage when they change
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    try {
+      // Only save if we have messages and they're different from initialMessages
+      if (
+        messages.length > 0 &&
+        JSON.stringify(messages) !== JSON.stringify(initialMessages)
+      ) {
+        localStorage.setItem(
+          STORAGE_KEYS.CHAT_DRAFT_MESSAGES(id),
+          JSON.stringify(messages)
+        );
+      }
+    } catch (e) {
+      console.error("Error saving draft messages to localStorage:", e);
+    }
+  }, [id, messages, initialMessages]);
+
+  // Custom submit handler that clears localStorage input after submission
+  const handleSubmitWithCacheClear = (
+    event?: { preventDefault?: () => void } | undefined,
+    chatRequestOptions?: ChatRequestOptions | undefined
+  ) => {
+    handleSubmit(event, chatRequestOptions);
+
+    // Clear input cache after successful submission
+    if (typeof window !== "undefined" && !event?.preventDefault) {
+      localStorage.removeItem(STORAGE_KEYS.CHAT_INPUT(id));
+      localStorage.removeItem(STORAGE_KEYS.CHAT_ATTACHMENTS(id));
+    }
+  };
 
   return (
     <>
-      <div className="flex flex-col min-w-0 h-dvh">
+      <div className="flex flex-col min-w-0 w-full h-dvh">
         <ChatHeader />
 
         <Messages
@@ -159,28 +290,57 @@ export function Chat({
           isArtifactVisible={isArtifactVisible}
         />
 
-        <form className="flex mx-auto px-4 pb-4 md:pb-6 gap-2 w-full md:max-w-3xl">
-          <MultimodalInput
-            chatId={id}
-            input={input}
-            setInput={setInput}
-            handleSubmit={handleSubmit}
-            isLoading={isLoading}
-            stop={stop}
-            attachments={attachments}
-            setAttachments={setAttachments}
-            messages={messages}
-            setMessages={setMessages}
-            append={append}
-          />
-        </form>
+        <div className="flex flex-col mx-auto px-6 md:px-8 pb-6 md:pb-8 w-full max-w-3xl">
+          <form
+            className="flex w-full gap-2"
+            onSubmit={(e) => handleSubmitWithCacheClear(e)}
+          >
+            <MultimodalInput
+              chatId={id}
+              input={input}
+              setInput={setInput}
+              handleSubmit={handleSubmitWithCacheClear}
+              isLoading={isLoading}
+              stop={stop}
+              attachments={attachments}
+              setAttachments={setAttachments}
+              messages={messages}
+              setMessages={setMessages}
+              append={append}
+            />
+          </form>
+          <p className="text-[10px] text-gray-400 text-center mt-2">
+            Not affiliated with Y Combinator or any of its subsidiaries. LLMs
+            can hallucinate and generate false information.
+            <br />
+            Made with love by{" "}
+            <a
+              href="https://x.com/sshtunnelvision"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-orange-500"
+            >
+              @sshtunnelvision
+            </a>
+            . This is an{" "}
+            <a
+              href="https://elucide.chat"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-orange-500"
+            >
+              elucide product
+            </a>
+            .
+          </p>
+        </div>
       </div>
 
       <Artifact
         chatId={id}
         input={input}
         setInput={setInput}
-        handleSubmit={handleSubmit}
+        handleSubmit={handleSubmitWithCacheClear}
         isLoading={isLoading}
         stop={stop}
         attachments={attachments}

@@ -1,5 +1,64 @@
 import { ArtifactKind } from '@/components/artifact';
 
+export const regularPrompt =
+  'You are a friendly assistant! Keep your responses concise and helpful.';
+
+export const systemPrompt = ({
+  selectedChatModel,
+}: {
+  selectedChatModel: string;
+}) => {
+  if (selectedChatModel === 'chat-model-reasoning') {
+    return regularPrompt;
+  } else {
+    return `
+
+You have access to the following tools:
+
+1. queryFounders: Query the YC Founders database to answer questions about founders, companies, and batches.
+
+When a user asks about YC founders, companies, or batches:
+1. Only provide additional context after the query results are shown
+2. Present information in a well-structured format
+3. Provide context about founders, their companies, their education, experience, skills, and any other information from the database.
+4. DO NOT MAKE UP ANY INFORMATION. ONLY USE THE INFORMATION FROM THE DATABASE.
+5. always include the company link and linkedin profile link in the response.
+5. Conclude with insightful observations about patterns or trends when applicable. BE BRUTALLY HONEST and direct.
+
+The founders table is in the 'knowledge' schema, so you should use 'knowledge.founders' in your queries.
+
+##IMPORTANT:
+COLUMNS IN THE FOUNDERS TABLE:
+- id
+- session_id
+- page_id
+- name
+- title
+- company
+- batch
+- company_url
+- description
+- image_url
+- linkedin_url
+
+COLUMNS IN THE FOUNDER_LINKEDIN_DATA TABLE:
+- id
+- founder_id (foreign key to knowledge.founders.id)
+- headline
+- location
+- experience
+- education
+- skills
+
+EXAMPLE JOIN QUERY:
+SELECT f.*, l.headline, l.location, l.experience, l.education, l.skills 
+FROM knowledge.founders f
+LEFT JOIN knowledge.founder_linkedin_data l ON f.id = l.founder_id
+WHERE f.name LIKE '%John%'
+`;
+  }
+};
+
 export const artifactsPrompt = `
 Artifacts is a special user interface mode that helps users with writing, editing, and other content creation tasks. When artifact is open, it is on the right side of the screen, while the conversation is on the left side. When creating or updating documents, changes are reflected in real-time on the artifacts and visible to the user.
 
@@ -30,49 +89,6 @@ This is a guide for using artifacts tools: \`createDocument\` and \`updateDocume
 
 Do not update document right after creating it. Wait for user feedback or request to update it.
 `;
-
-export const regularPrompt =
-  'You are a friendly assistant! Keep your responses concise and helpful.';
-
-export const systemPrompt = ({
-  selectedChatModel,
-}: {
-  selectedChatModel: string;
-}) => {
-  if (selectedChatModel === 'chat-model-reasoning') {
-    return regularPrompt;
-  } else {
-    return `${regularPrompt}
-
-You have access to the following tools:
-
-1. queryFounders: Query the YC Founders database to answer questions about founders, companies, and batches.
-
-When a user asks about YC founders, companies, or batches:
-1. Only provide additional context after the query results are shown
-2. Present information in a well-structured essay format
-3. Provide rich context about founders, their companies, and their impact
-4. DO NOT MAKE UP ANY INFORMATION. ONLY USE THE INFORMATION FROM THE DATABASE.
-5. Conclude with insightful observations about patterns or trends when applicable
-
-The founders table is in the 'knowledge' schema, so you should use 'knowledge.founders' in your queries.
-
-##IMPORTANT:
-COLUMNS IN THE FOUNDERS TABLE:
-- id
-- session_id
-- page_id
-- name
-- title
-- company
-- batch
-- company_url
-- description
-- image_url
-
-${artifactsPrompt}`;
-  }
-};
 
 export const codePrompt = `
 You are a Python code generator that creates self-contained, executable code snippets. When writing code:

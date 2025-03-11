@@ -374,8 +374,15 @@ export async function executeFoundersQuery(sqlQuery: string): Promise<unknown> {
     // Make sure the query targets the knowledge schema
     // If the query doesn't explicitly specify the schema, prepend it
     let modifiedQuery = sqlQuery;
+    
+    // Handle founders table
     if (!sqlQuery.toLowerCase().includes('knowledge.founders')) {
-      modifiedQuery = sqlQuery.replace(/\bfounders\b/g, 'knowledge.founders');
+      modifiedQuery = modifiedQuery.replace(/\bfounders\b/g, 'knowledge.founders');
+    }
+    
+    // Handle founder_linkedin_data table
+    if (!sqlQuery.toLowerCase().includes('knowledge.founder_linkedin_data')) {
+      modifiedQuery = modifiedQuery.replace(/\bfounder_linkedin_data\b/g, 'knowledge.founder_linkedin_data');
     }
     
     // Execute the raw SQL query

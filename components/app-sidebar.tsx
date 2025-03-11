@@ -34,8 +34,8 @@ export function AppSidebar({ user }: { user: User | undefined }) {
               }}
               className="flex flex-row gap-3 items-center"
             >
-              <span className="text-lg font-semibold px-2 hover:bg-muted rounded-md cursor-pointer">
-                elucide
+              <span className="text-base font-light px-2 hover:bg-muted rounded-md cursor-pointer tracking-wide">
+                YC Founder&apos;s Chat
               </span>
             </Link>
             <Tooltip>

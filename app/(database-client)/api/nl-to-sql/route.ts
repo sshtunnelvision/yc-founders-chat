@@ -25,8 +25,45 @@ Columns:
 - image_url (text): URL to founder's image
 - linkedin_url (text): URL to founder's LinkedIn profile
 
+Table name: knowledge.founder_linkedin_data
+Columns:
+- id (UUID): Unique identifier for each record
+- founder_id (UUID): Foreign key referencing knowledge.founders.id
+- headline (text): LinkedIn headline
+- location (text): LinkedIn location
+- experience (json): LinkedIn experience data as JSON array
+- education (json): LinkedIn education data as JSON array
+- skills (json): LinkedIn skills data as JSON array
+
+JSON STRUCTURE EXAMPLES:
+1. Education JSON structure:
+[
+  {
+    "degree": "Bachelor of Science",
+    "description": "",
+    "school_name": "Stanford University",
+    "field_of_study": "Computer Science"
+  },
+  {
+    "degree": "Master of Business Administration",
+    "description": "",
+    "school_name": "Harvard Business School",
+    "field_of_study": "Business"
+  }
+]
+
+2. Experience JSON structure:
+[
+  {
+    "title": "CEO",
+    "company_name": "Example Corp",
+    "description": "Led company growth",
+    "location": "San Francisco"
+  }
+]
+
 IMPORTANT RULES:
-1. Always use 'knowledge.founders' as the table name
+1. Always use 'knowledge.founders' as the main table name and 'knowledge.founder_linkedin_data' for LinkedIn data
 2. Generate only valid PostgreSQL syntax
 3. Return ONLY the SQL query without any explanations or markdown formatting
 4. Keep queries focused and efficient
@@ -34,6 +71,44 @@ IMPORTANT RULES:
 6. Use LIMIT when appropriate to avoid excessive results
 7. Use ILIKE for case-insensitive text matching
 8. For fuzzy text matching, use ILIKE with % wildcards
+9. When joining tables, use table aliases (e.g., 'f' for founders, 'l' for LinkedIn data)
+10. To join the tables: FROM knowledge.founders f LEFT JOIN knowledge.founder_linkedin_data l ON f.id = l.founder_id
+
+QUERYING JSON FIELDS:
+1. To search within JSON arrays (education, experience, skills), use jsonb_array_elements:
+   - For education: SELECT 1 FROM jsonb_array_elements(l.education::jsonb) edu WHERE edu->>'school_name' ILIKE '%Stanford%'
+   - For experience: SELECT 1 FROM jsonb_array_elements(l.experience::jsonb) exp WHERE exp->>'company_name' ILIKE '%Google%'
+
+EXAMPLE QUERIES:
+1. Find founders who went to Stanford:
+   SELECT f.name, f.company, f.batch 
+   FROM knowledge.founders f 
+   JOIN knowledge.founder_linkedin_data l ON f.id = l.founder_id 
+   WHERE EXISTS (
+     SELECT 1 FROM jsonb_array_elements(l.education::jsonb) edu
+     WHERE edu->>'school_name' ILIKE '%Stanford%'
+   )
+   LIMIT 100;
+
+2. Find founders who worked at Google:
+   SELECT f.name, f.company, f.batch 
+   FROM knowledge.founders f 
+   JOIN knowledge.founder_linkedin_data l ON f.id = l.founder_id 
+   WHERE EXISTS (
+     SELECT 1 FROM jsonb_array_elements(l.experience::jsonb) exp
+     WHERE exp->>'company_name' ILIKE '%Google%'
+   )
+   LIMIT 50;
+
+3. Count founders by university:
+   SELECT edu->>'school_name' as university, COUNT(DISTINCT f.id) as founder_count
+   FROM knowledge.founders f 
+   JOIN knowledge.founder_linkedin_data l ON f.id = l.founder_id,
+   jsonb_array_elements(l.education::jsonb) edu
+   WHERE edu->>'school_name' IS NOT NULL
+   GROUP BY university
+   ORDER BY founder_count DESC
+   LIMIT 20;
 `;
 
 export async function POST(request: Request) {

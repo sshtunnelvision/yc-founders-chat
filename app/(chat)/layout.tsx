@@ -1,4 +1,6 @@
 import { auth } from "@/app/(auth)/auth";
+import { AppSidebar } from "@/components/app-sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 export default async function ChatLayout({
   children,
@@ -8,8 +10,13 @@ export default async function ChatLayout({
   const session = await auth();
 
   return (
-    <div className="flex h-[100svh]">
-      <main className="flex flex-col flex-1 h-full">{children}</main>
-    </div>
+    <SidebarProvider>
+      <div className="flex h-[100svh] w-full">
+        <AppSidebar user={session?.user} />
+        <main className="flex flex-col flex-1 h-full w-full overflow-hidden">
+          {children}
+        </main>
+      </div>
+    </SidebarProvider>
   );
 }

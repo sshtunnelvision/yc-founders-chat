@@ -138,3 +138,15 @@ export const founders = knowledgeSchema.table('founders', {
 });
 
 export type Founder = InferSelectModel<typeof founders>;
+
+export const founderLinkedinData = knowledgeSchema.table('founder_linkedin_data', {
+  id: integer('id').primaryKey().notNull(),
+  founderId: integer('founder_id').notNull().references(() => founders.id),
+  headline: varchar('headline'),
+  location: varchar('location'),
+  experience: json('experience'),
+  education: json('education'),
+  skills: json('skills'),
+});
+
+export type FounderLinkedinData = InferSelectModel<typeof founderLinkedinData>;

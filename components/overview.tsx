@@ -19,9 +19,6 @@ export const Overview = () => {
           Explore and learn about Y Combinator founders and their companies
           through an intelligent chat interface.
         </p>
-        <p className="text-xs text-muted-foreground mt-4">
-          Not affiliated with Y Combinator or any of its subsidiaries.
-        </p>
       </div>
     </motion.div>
   );
