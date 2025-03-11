@@ -63,15 +63,15 @@ export default function Page() {
           </div>
           <h1 className="text-2xl font-light">YC Founder&apos;s Chat</h1>
           <p className="text-sm text-justify text-muted-foreground">
-            Explore and learn about Y Combinator founders and their experiences
-            through an intelligent chat interface. Our database contains ~7,500
-            YC funded founders enriched with LinkedIn data including education,
+            Explore and learn about Y-Combinator founders through an intelligent
+            chat interface. Our database contains information on ~7,500
+            YC-funded founders enriched with LinkedIn data including education,
             skills, and work experience.
           </p>
         </div>
         <div className="flex flex-col gap-4 px-4 sm:px-16">
           <p className="text-center text-sm text-muted-foreground">
-            Sign in below to access the database
+            Sign in below to access the database.
           </p>
           <SocialLoginButtons />
           <AnimatePresence>
