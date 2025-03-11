@@ -43,10 +43,7 @@ export const {
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
-      console.log('Sign in callback:', { 
-        user: { id: user.id, email: user.email }, 
-        account: account ? { provider: account.provider } : null 
-      });
+     
       
       // Only handle OAuth sign-ins
       if (account && account.provider && account.providerAccountId && user.email) {
@@ -62,7 +59,7 @@ export const {
             const emailUsers = await getUser(user.email);
             
             if (emailUsers.length > 0) {
-              console.log('Found existing user by email:', emailUsers[0].id);
+            
               // Update existing user with OAuth info
               await createOAuthUser({
                 email: user.email,
@@ -74,7 +71,7 @@ export const {
               // Use the existing user's ID
               user.id = emailUsers[0].id;
             } else {
-              console.log('Creating new user for:', user.email);
+          
               // Create new user
               const newUser = await createOAuthUser({
                 email: user.email,
@@ -85,12 +82,11 @@ export const {
               });
               // Use the new user's ID
               if (newUser) {
-                console.log('Created new user with ID:', newUser.id);
                 user.id = newUser.id;
               }
             }
           } else {
-            console.log('Found existing user by provider:', existingUsers[0].id);
+
             // Use the existing OAuth user's ID
             user.id = existingUsers[0].id;
           }
@@ -105,7 +101,6 @@ export const {
       return true;
     },
     async redirect({ url, baseUrl }) {
-      console.log('Redirect callback:', { url, baseUrl });
       
       // If the URL is relative, prepend the base URL
       if (url.startsWith('/')) {
@@ -121,11 +116,6 @@ export const {
       return baseUrl;
     },
     async jwt({ token, user, account }) {
-      console.log('JWT callback:', { 
-        tokenId: token.id, 
-        userId: user?.id,
-        provider: account?.provider 
-      });
       
       // Initial sign in
       if (account && user) {
@@ -147,10 +137,6 @@ export const {
       session: ExtendedSession;
       token: any;
     }) {
-      console.log('Session callback:', { 
-        tokenId: token.id,
-        sessionUserId: session.user?.id 
-      });
       
       if (session.user) {
         session.user.id = token.id as string;

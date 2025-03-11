@@ -34,14 +34,6 @@ export function SocialLoginButtons() {
 
   return (
     <div className="flex flex-col gap-3 w-full">
-      <div className="relative flex items-center justify-center w-full">
-        <div className="border-t border-gray-300 dark:border-gray-700 w-full"></div>
-        <span className="bg-white dark:bg-zinc-900 px-2 text-xs text-gray-500 dark:text-gray-400">
-          OR CONTINUE WITH
-        </span>
-        <div className="border-t border-gray-300 dark:border-gray-700 w-full"></div>
-      </div>
-
       <div className="flex gap-3 w-full">
         <Button
           variant="outline"

@@ -23,8 +23,6 @@ const STORAGE_KEYS = {
 };
 
 const getErrorMessage = (error: any) => {
-  console.log("Error object:", error);
-
   // Check for max tokens error in various formats
   const maxTokensErrorMessages = [
     "maximum context length",
@@ -43,7 +41,6 @@ const getErrorMessage = (error: any) => {
 
   // Check if error is a simple Error object with the generic message
   if (error instanceof Error && error.message === "Oops, an error occured!") {
-    console.log("Found generic error that might be a max tokens error");
     return {
       title: "Maximum token limit exceeded",
       description:
@@ -53,7 +50,6 @@ const getErrorMessage = (error: any) => {
 
   // Check error.message (direct property)
   if (error?.message && containsMaxTokensError(error.message)) {
-    console.log("Found max tokens error in error.message");
     return {
       title: "Maximum token limit exceeded",
       description:
@@ -73,7 +69,6 @@ const getErrorMessage = (error: any) => {
           containsMaxTokensError(parsedBody.error.message)) ||
         parsedBody?.error?.code === "context_length_exceeded"
       ) {
-        console.log("Found max tokens error in parsed responseBody");
         return {
           title: "Maximum token limit exceeded",
           description:

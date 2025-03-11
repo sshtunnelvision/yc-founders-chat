@@ -90,7 +90,6 @@ export function DataStreamHandler({ id }: { id: string }) {
           case "error": {
             // Check for max tokens error
             const errorContent = delta.content as string;
-            console.log("Data stream error content:", errorContent);
 
             // Direct check for the generic error message
             const isGenericError = errorContent === "Oops, an error occured!";

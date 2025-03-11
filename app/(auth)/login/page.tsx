@@ -1,68 +1,83 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useState } from "react";
-import { toast } from "sonner";
-
-import { AuthForm } from "@/components/auth-form";
-import { SubmitButton } from "@/components/submit-button";
+import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+import { motion, AnimatePresence } from "framer-motion";
 import { SocialLoginButtons } from "@/components/social-login-buttons";
 
-import { login, type LoginActionState } from "../actions";
+// Import ReactConfetti dynamically to avoid SSR issues
+const ReactConfetti = dynamic(() => import("react-confetti"), {
+  ssr: false,
+});
 
 export default function Page() {
-  const router = useRouter();
-
-  const [email, setEmail] = useState("");
-  const [isSuccessful, setIsSuccessful] = useState(false);
-
-  const [state, formAction] = useActionState<LoginActionState, FormData>(
-    login,
-    {
-      status: "idle",
-    }
-  );
+  const [showConfetti, setShowConfetti] = useState(true);
+  const [showMessage, setShowMessage] = useState(true);
+  const [windowSize, setWindowSize] = useState({
+    width: 0,
+    height: 0,
+  });
 
   useEffect(() => {
-    if (state.status === "failed") {
-      toast.error("Invalid credentials!");
-    } else if (state.status === "invalid_data") {
-      toast.error("Failed validating your submission!");
-    } else if (state.status === "success") {
-      setIsSuccessful(true);
-      router.refresh();
-    }
-  }, [state.status, router]);
+    // Set window size
+    setWindowSize({
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
 
-  const handleSubmit = (formData: FormData) => {
-    setEmail(formData.get("email") as string);
-    formAction(formData);
-  };
+    // Hide confetti after 5 seconds
+    const confettiTimer = setTimeout(() => {
+      setShowConfetti(false);
+    }, 5000);
+
+    // Hide message after 4 seconds
+    const messageTimer = setTimeout(() => {
+      setShowMessage(false);
+    }, 4000);
+
+    return () => {
+      clearTimeout(confettiTimer);
+      clearTimeout(messageTimer);
+    };
+  }, []);
 
   return (
     <div className="flex h-dvh w-screen items-start pt-12 md:pt-0 md:items-center justify-center">
+      {showConfetti && (
+        <ReactConfetti
+          width={windowSize.width}
+          height={windowSize.height}
+          recycle={false}
+          numberOfPieces={200}
+        />
+      )}
+
       <div className="w-full max-w-md overflow-hidden rounded-2xl flex flex-col gap-8">
+        <AnimatePresence>
+          {showMessage && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="absolute top-8 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-6 py-3 rounded-full shadow-lg"
+            >
+              <p className="text-lg font-medium">
+                Happy 20 Year Anniversary YC! 🎉
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <div className="flex flex-col items-center justify-center gap-2 px-4 text-center sm:px-16">
-          <h3 className="text-xl font-semibold dark:text-zinc-50">Sign In</h3>
-          <p className="text-sm text-gray-500 dark:text-zinc-400">
-            Use your email and password to sign in
+          <h1 className="text-2xl font-light">YC Founder&apos;s Chat</h1>
+          <p className="text-sm text-muted-foreground">
+            Explore and learn about Y Combinator founders and their companies
+            through an intelligent chat interface.
           </p>
         </div>
-        <AuthForm action={handleSubmit} defaultEmail={email}>
-          <SubmitButton isSuccessful={isSuccessful}>Sign in</SubmitButton>
+        <div className="flex flex-col gap-4 px-4 sm:px-16">
           <SocialLoginButtons />
-          <p className="text-center text-sm text-gray-600 mt-4 dark:text-zinc-400">
-            {"Don't have an account? "}
-            <Link
-              href="/register"
-              className="font-semibold text-gray-800 hover:underline dark:text-zinc-200"
-            >
-              Sign up
-            </Link>
-            {" for free."}
-          </p>
-        </AuthForm>
+        </div>
       </div>
     </div>
   );
