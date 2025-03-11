@@ -55,14 +55,17 @@ export default function Page() {
       <div className="w-full max-w-md overflow-hidden rounded-2xl flex flex-col gap-8">
         <div className="flex flex-col items-center justify-center gap-2 px-4 text-center sm:px-16">
           <h1 className="text-2xl font-light">YC Founder&apos;s Chat</h1>
-          <p className="text-sm text-muted-foreground">
-            Explore and learn about Y Combinator founders and their companies
+          <p className="text-sm text-justify text-muted-foreground">
+            Explore and learn about Y Combinator founders and their experiences
             through an intelligent chat interface. Our database contains 7,374
-            YC funded founders with enriched LinkedIn data including education,
+            YC funded founders enriched with LinkedIn data including education,
             skills, and work experience.
           </p>
         </div>
         <div className="flex flex-col gap-4 px-4 sm:px-16">
+          <p className="text-center text-sm text-muted-foreground">
+            Sign in below to access the database
+          </p>
           <SocialLoginButtons />
           <AnimatePresence>
             {showMessage && (
@@ -70,7 +73,14 @@ export default function Page() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
-                className="bg-primary text-primary-foreground px-6 py-3 rounded-full shadow-lg text-center mt-4"
+                transition={{
+                  delay: 0.8,
+                  duration: 1.2,
+                  type: "spring",
+                  stiffness: 80,
+                  damping: 25,
+                }}
+                className="bg-primary text-primary-foreground px-6 py-3 rounded-lg shadow-lg text-center mt-4"
               >
                 <p className="text-lg font-medium">
                   Happy 20 Year Anniversary YC! 🎉
