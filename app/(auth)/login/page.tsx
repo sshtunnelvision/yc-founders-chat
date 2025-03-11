@@ -53,21 +53,6 @@ export default function Page() {
       )}
 
       <div className="w-full max-w-md overflow-hidden rounded-2xl flex flex-col gap-8">
-        <AnimatePresence>
-          {showMessage && (
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="absolute top-8 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-6 py-3 rounded-full shadow-lg"
-            >
-              <p className="text-lg font-medium">
-                Happy 20 Year Anniversary YC! 🎉
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
         <div className="flex flex-col items-center justify-center gap-2 px-4 text-center sm:px-16">
           <h1 className="text-2xl font-light">YC Founder&apos;s Chat</h1>
           <p className="text-sm text-muted-foreground">
@@ -77,6 +62,20 @@ export default function Page() {
         </div>
         <div className="flex flex-col gap-4 px-4 sm:px-16">
           <SocialLoginButtons />
+          <AnimatePresence>
+            {showMessage && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                className="bg-primary text-primary-foreground px-6 py-3 rounded-full shadow-lg text-center mt-4"
+              >
+                <p className="text-lg font-medium">
+                  Happy 20 Year Anniversary YC! 🎉
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </div>
