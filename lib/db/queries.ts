@@ -35,6 +35,26 @@ export async function getUser(email: string): Promise<Array<User>> {
   }
 }
 
+export async function getUserByProviderAccountId(
+  provider: string,
+  providerAccountId: string
+): Promise<Array<User>> {
+  try {
+    return await db
+      .select()
+      .from(user)
+      .where(
+        and(
+          eq(user.provider, provider),
+          eq(user.providerAccountId, providerAccountId)
+        )
+      );
+  } catch (error) {
+    console.error('Failed to get user by provider from database');
+    throw error;
+  }
+}
+
 export async function createUser(email: string, password: string) {
   const salt = genSaltSync(10);
   const hash = hashSync(password, salt);
@@ -43,6 +63,61 @@ export async function createUser(email: string, password: string) {
     return await db.insert(user).values({ email, password: hash });
   } catch (error) {
     console.error('Failed to create user in database');
+    throw error;
+  }
+}
+
+export async function createOAuthUser({
+  email,
+  name,
+  image,
+  provider,
+  providerAccountId,
+}: {
+  email: string;
+  name?: string | null;
+  image?: string | null;
+  provider: string;
+  providerAccountId: string;
+}) {
+  try {
+    // Check if user already exists
+    const existingUsers = await getUser(email);
+    
+    if (existingUsers.length > 0) {
+      // Update existing user with OAuth info if they don't have it
+      if (!existingUsers[0].provider) {
+        await db
+          .update(user)
+          .set({
+            name: name || null,
+            image: image || null,
+            provider,
+            providerAccountId,
+            updatedAt: new Date(),
+          })
+          .where(eq(user.id, existingUsers[0].id));
+      }
+      return existingUsers[0];
+    }
+    
+    // Create new user
+    const [newUser] = await db
+      .insert(user)
+      .values({
+        email,
+        name: name || null,
+        image: image || null,
+        provider,
+        providerAccountId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .returning();
+    
+    return newUser;
+  } catch (error) {
+    console.error('Failed to create OAuth user in database', error);
     throw error;
   }
 }

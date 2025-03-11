@@ -43,6 +43,13 @@
       "when": 1741259765000,
       "tag": "0005_add_pinned_to_chat",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1741259766000,
+      "tag": "0006_add_oauth_fields",
+      "breakpoints": true
     }
   ]
 }

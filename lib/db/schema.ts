@@ -19,6 +19,12 @@ export const user = elucideSchema.table('User', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
   email: varchar('email', { length: 64 }).notNull(),
   password: varchar('password', { length: 64 }),
+  name: varchar('name', { length: 255 }),
+  image: varchar('image', { length: 255 }),
+  provider: varchar('provider', { length: 64 }),
+  providerAccountId: varchar('providerAccountId', { length: 255 }),
+  createdAt: timestamp('createdAt').defaultNow(),
+  updatedAt: timestamp('updatedAt').defaultNow(),
 });
 
 export type User = InferSelectModel<typeof user>;

@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-
+import { redirect } from 'next/navigation';
 import { createUser, getUser } from '@/lib/db/queries';
 
 import { signIn } from './auth';
@@ -82,3 +82,16 @@ export const register = async (
     return { status: 'failed' };
   }
 };
+
+// OAuth sign-in actions
+export async function signInWithGoogle() {
+  // This will redirect to Google and throw a NEXT_REDIRECT error
+  // which is expected behavior for Next.js redirects in server actions
+  await signIn('google');
+}
+
+export async function signInWithApple() {
+  // This will redirect to Apple and throw a NEXT_REDIRECT error
+  // which is expected behavior for Next.js redirects in server actions
+  await signIn('apple');
+}

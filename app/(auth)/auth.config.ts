@@ -4,6 +4,7 @@ export const authConfig = {
   pages: {
     signIn: '/login',
     newUser: '/',
+    error: '/login',
   },
   providers: [
     // added later in auth.ts since it requires bcrypt which is only compatible with Node.js
@@ -15,6 +16,12 @@ export const authConfig = {
       const isOnChat = nextUrl.pathname.startsWith('/');
       const isOnRegister = nextUrl.pathname.startsWith('/register');
       const isOnLogin = nextUrl.pathname.startsWith('/login');
+      const isOnAuth = nextUrl.pathname.startsWith('/api/auth');
+
+      // Always allow access to auth-related routes
+      if (isOnAuth) {
+        return true;
+      }
 
       if (isLoggedIn && (isOnLogin || isOnRegister)) {
         return Response.redirect(new URL('/', nextUrl as unknown as URL));
