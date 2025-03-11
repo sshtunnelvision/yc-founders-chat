@@ -95,6 +95,10 @@ export default function Page() {
               </motion.div>
             )}
           </AnimatePresence>
+
+          <p className="text-[10px] text-gray-400 text-center mt-4">
+            Not affiliated with Y Combinator or any of its subsidiaries.
+          </p>
         </div>
       </div>
     </div>
