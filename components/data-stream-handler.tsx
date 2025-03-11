@@ -115,7 +115,7 @@ export function DataStreamHandler({ id }: { id: string }) {
             if (isGenericError || isMaxTokensError) {
               toast.error("Maximum token limit exceeded", {
                 description:
-                  "Please use the database to query for specific information about YC founders instead of asking for large amounts of data at once.",
+                  "That was too many tokens for the context limit. We are in beta mode. For queries with larger responses please query the database directly on the database page.",
                 duration: 5000,
               });
             } else {

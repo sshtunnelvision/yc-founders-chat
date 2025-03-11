@@ -16,24 +16,14 @@ interface SuggestedActionsProps {
 function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
   const suggestedActions = [
     {
-      title: "Which was YC's largest batch",
-      label: "in terms of number of founders?",
-      action: "Which was YC's largest batch in terms of number of founders?",
+      title: "Who are the founders in the first YC batch?",
+      label: "",
+      action: "Who are the founders in the S05 batch?",
     },
     {
-      title: "Show me founders who",
-      label: `started companies in the healthcare space`,
-      action: `Show me founders who started companies in the healthcare space`,
-    },
-    {
-      title: "Find companies with",
-      label: `'AI' or 'artificial intelligence' in their description`,
-      action: `Find companies with 'AI' or 'artificial intelligence' in their description`,
-    },
-    {
-      title: "Show me founders",
-      label: "who were CEOs or co-founders",
-      action: "Show me founders who were CEOs or co-founders",
+      title: "What does 'worker 17' mean?",
+      label: "",
+      action: "What does 'worker 17' mean?",
     },
   ];
 

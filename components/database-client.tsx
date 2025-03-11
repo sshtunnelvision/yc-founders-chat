@@ -159,6 +159,95 @@ WHERE EXISTS (
 )
 LIMIT 50;`,
   },
+  {
+    title: "Founders with extensive experience",
+    description:
+      "Find founders who had more than 5 years of total work experience",
+    query: `SELECT
+  f.name,
+  f.company,
+  f.batch,
+  ROUND(
+    -- Apply a scaling factor to make the experience more realistic
+    (LEAST(40, SUM(
+      CASE 
+        WHEN exp->>'date_range' IS NULL THEN 0
+        WHEN exp->>'date_range' NOT LIKE '%to%' THEN 0
+        WHEN exp->>'date_range' LIKE '%to Present%' THEN
+          LEAST(
+            10,
+            CASE
+              WHEN split_part(exp->>'date_range', ' to ', 1) !~ '^[0-9]{4}-[0-9]{1,2}$' THEN 0
+              ELSE 
+                EXTRACT(EPOCH FROM age(
+                  CURRENT_DATE, 
+                  to_date(split_part(exp->>'date_range', ' to ', 1) || '-01', 'YYYY-MM-DD')
+                )) / (60 * 60 * 24 * 365.25)
+            END
+          )
+        ELSE
+          LEAST(
+            10,
+            CASE
+              WHEN split_part(exp->>'date_range', ' to ', 1) !~ '^[0-9]{4}-[0-9]{1,2}$' 
+                OR split_part(exp->>'date_range', ' to ', 2) !~ '^[0-9]{4}-[0-9]{1,2}' THEN 0
+              ELSE 
+                EXTRACT(EPOCH FROM age(
+                  to_date(split_part(exp->>'date_range', ' to ', 2) || '-01', 'YYYY-MM-DD'),
+                  to_date(split_part(exp->>'date_range', ' to ', 1) || '-01', 'YYYY-MM-DD')
+                )) / (60 * 60 * 24 * 365.25)
+            END
+          )
+      END
+    )) / (1 + (0.3 * COUNT(exp))) 
+  )::numeric, 1) as years_of_experience
+FROM 
+  knowledge.founders f
+JOIN 
+  knowledge.founder_linkedin_data l ON f.id = l.founder_id,
+  jsonb_array_elements(l.experience::jsonb) exp
+WHERE 
+  l.experience IS NOT NULL AND 
+  l.experience != '[]' AND
+  l.experience != 'null' AND
+  exp->>'date_range' IS NOT NULL
+GROUP BY f.id, f.name, f.company, f.batch
+HAVING ROUND(
+  (LEAST(40, SUM(
+    CASE 
+      WHEN exp->>'date_range' IS NULL THEN 0
+      WHEN exp->>'date_range' NOT LIKE '%to%' THEN 0
+      WHEN exp->>'date_range' LIKE '%to Present%' THEN
+        LEAST(
+          10,
+          CASE
+            WHEN split_part(exp->>'date_range', ' to ', 1) !~ '^[0-9]{4}-[0-9]{1,2}$' THEN 0
+            ELSE 
+              EXTRACT(EPOCH FROM age(
+                CURRENT_DATE, 
+                to_date(split_part(exp->>'date_range', ' to ', 1) || '-01', 'YYYY-MM-DD')
+              )) / (60 * 60 * 24 * 365.25)
+          END
+        )
+      ELSE
+        LEAST(
+          10,
+          CASE
+            WHEN split_part(exp->>'date_range', ' to ', 1) !~ '^[0-9]{4}-[0-9]{1,2}$' 
+              OR split_part(exp->>'date_range', ' to ', 2) !~ '^[0-9]{4}-[0-9]{1,2}' THEN 0
+            ELSE 
+              EXTRACT(EPOCH FROM age(
+                to_date(split_part(exp->>'date_range', ' to ', 2) || '-01', 'YYYY-MM-DD'),
+                to_date(split_part(exp->>'date_range', ' to ', 1) || '-01', 'YYYY-MM-DD')
+              )) / (60 * 60 * 24 * 365.25)
+          END
+        )
+    END
+  )) / (1 + (0.3 * COUNT(exp)))
+)::numeric, 1) > 5
+ORDER BY years_of_experience DESC
+LIMIT 50;`,
+  },
 ];
 
 export function DatabaseClient() {

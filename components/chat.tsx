@@ -44,7 +44,7 @@ const getErrorMessage = (error: any) => {
     return {
       title: "Maximum token limit exceeded",
       description:
-        "Please use the database to query for specific information about YC founders instead of asking for large amounts of data at once.",
+        "That was too many tokens for the context limit. We are in beta mode. For queries with larger responses please query the database directly on the database page.",
     };
   }
 
@@ -53,7 +53,7 @@ const getErrorMessage = (error: any) => {
     return {
       title: "Maximum token limit exceeded",
       description:
-        "Please use the database to query for specific information about YC founders instead of asking for large amounts of data at once.",
+        "That was too many tokens for the context limit. We are in beta mode. For queries with larger responses please query the database directly on the database page.",
     };
   }
 
@@ -72,7 +72,7 @@ const getErrorMessage = (error: any) => {
         return {
           title: "Maximum token limit exceeded",
           description:
-            "Please use the database to query for specific information about YC founders instead of asking for large amounts of data at once.",
+            "That was too many tokens for the context limit. We are in beta mode. For queries with larger responses please query the database directly on the database page.",
         };
       }
 
