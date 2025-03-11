@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   description:
     "Explore and learn about Y Combinator founders and their companies through an intelligent chat interface.",
   icons: {
-    icon: "./favicon.ico",
+    icon: "/favicon.ico",
   },
 };
 
