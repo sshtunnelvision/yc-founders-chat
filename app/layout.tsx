@@ -7,9 +7,13 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://elucide.chat"),
-  title: "elucide",
-  description: "elucide chat v2",
+  metadataBase: new URL("https://yc-founders-chat.vercel.app"),
+  title: "YC Founder's Chat",
+  description:
+    "Explore and learn about Y Combinator founders and their companies through an intelligent chat interface.",
+  icons: {
+    icon: "./favicon.ico",
+  },
 };
 
 export const viewport = {
