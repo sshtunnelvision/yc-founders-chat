@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { type ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { Database, Menu, PanelLeftClose, PanelLeft } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";

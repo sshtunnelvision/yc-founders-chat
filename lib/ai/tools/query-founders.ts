@@ -1,4 +1,4 @@
-import { tool, DataStreamWriter } from 'ai';
+import { tool, type DataStreamWriter } from 'ai';
 import { z } from 'zod';
 import { executeFoundersQuery } from '@/lib/db/queries';
 

@@ -4,7 +4,6 @@ import { useState } from "react";
 import cx from "classnames";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
-import { motion, AnimatePresence } from "framer-motion";
 
 interface FoundersQueryProps {
   question: string;
@@ -124,6 +123,7 @@ export function FoundersQuery({
           </span>
         </div>
         <button
+          type="button"
           onClick={() => setIsExpanded(!isExpanded)}
           className="text-xs text-blue-300 hover:text-blue-100 transition-colors duration-200 flex items-center"
         >
@@ -212,6 +212,7 @@ export function FoundersQuery({
         {status === "completed" && (
           <div className="mt-1">
             <button
+              type="button"
               onClick={() => setShowResults(!showResults)}
               className="text-xs text-blue-300 hover:text-blue-100 transition-colors duration-200 flex items-center gap-1 mb-2"
             >
@@ -271,11 +272,16 @@ export function FoundersQuery({
                     <tbody className="divide-y divide-gray-700/30">
                       {results.map((row, rowIndex) => (
                         <tr
-                          key={rowIndex}
+                          key={`result-row-${rowIndex}-${
+                            Object.values(row)[0]
+                          }`}
                           className="hover:bg-slate-800/30 transition-colors duration-150"
                         >
-                          {Object.values(row).map((value, colIndex) => (
-                            <td key={colIndex} className="px-2 py-1 text-xs">
+                          {Object.entries(row).map(([key, value]) => (
+                            <td
+                              key={`result-col-${key}`}
+                              className="px-2 py-1 text-xs"
+                            >
                               {typeof value === "object"
                                 ? JSON.stringify(value)
                                 : String(value)}
@@ -310,12 +316,12 @@ export function FoundersQuery({
                 r="10"
                 stroke="currentColor"
                 strokeWidth="4"
-              ></circle>
+              />
               <path
                 className="opacity-75"
                 fill="currentColor"
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
+              />
             </svg>
             Executing query...
           </div>

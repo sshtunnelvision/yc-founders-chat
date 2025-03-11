@@ -2,8 +2,8 @@
 
 import { useChat } from "ai/react";
 import { useEffect, useRef } from "react";
-import { artifactDefinitions, ArtifactKind } from "./artifact";
-import { Suggestion } from "@/lib/db/schema";
+import { artifactDefinitions, type ArtifactKind } from "./artifact";
+import type { Suggestion } from "@/lib/db/schema";
 import { initialArtifactData, useArtifact } from "@/hooks/use-artifact";
 import { toast } from "sonner";
 
@@ -87,7 +87,7 @@ export function DataStreamHandler({ id }: { id: string }) {
               status: "idle",
             };
 
-          case "error":
+          case "error": {
             // Check for max tokens error
             const errorContent = delta.content as string;
             console.log("Data stream error content:", errorContent);
@@ -130,6 +130,7 @@ export function DataStreamHandler({ id }: { id: string }) {
               ...draftArtifact,
               status: "idle",
             };
+          }
 
           default:
             return draftArtifact;

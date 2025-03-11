@@ -1,6 +1,5 @@
 import type { InferSelectModel } from 'drizzle-orm';
 import {
-  pgTable,
   varchar,
   timestamp,
   json,
@@ -11,7 +10,6 @@ import {
   boolean,
   pgSchema,
   integer,
-  doublePrecision,
 } from 'drizzle-orm/pg-core';
 
 const elucideSchema = pgSchema('elucide-v2');

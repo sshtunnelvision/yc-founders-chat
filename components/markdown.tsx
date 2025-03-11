@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { memo } from "react";
-import { Children, isValidElement } from "react";
+import { memo, Children, isValidElement } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { CodeBlock } from "./code-block";

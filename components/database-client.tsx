@@ -528,9 +528,9 @@ LIMIT 10"
                 <DialogTitle>Example Queries</DialogTitle>
               </DialogHeader>
               <div className="grid grid-cols-1 gap-4 py-4">
-                {EXAMPLE_QUERIES.map((example, index) => (
+                {EXAMPLE_QUERIES.map((example) => (
                   <div
-                    key={index}
+                    key={`example-${example.title}`}
                     className="border border-gray-200 dark:border-zinc-800 rounded-md p-3 hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors"
                   >
                     <div className="flex justify-between items-start mb-1">
@@ -539,9 +539,15 @@ LIMIT 10"
                         variant="ghost"
                         size="sm"
                         className="size-8 p-0"
-                        onClick={() => copyExampleQuery(example.query, index)}
+                        onClick={() =>
+                          copyExampleQuery(
+                            example.query,
+                            EXAMPLE_QUERIES.indexOf(example)
+                          )
+                        }
                       >
-                        {copiedQueryIndex === index ? (
+                        {copiedQueryIndex ===
+                        EXAMPLE_QUERIES.indexOf(example) ? (
                           <Check className="size-4 text-green-500" />
                         ) : (
                           <Copy className="size-4" />
@@ -609,10 +615,10 @@ LIMIT 10"
               <tbody className="divide-y divide-gray-200 dark:divide-zinc-800">
                 {results.map((row, rowIndex) => (
                   <tr
-                    key={rowIndex}
+                    key={`row-${rowIndex}-${Object.values(row)[0]}`}
                     className="hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors"
                   >
-                    {Object.values(row).map((value, colIndex) => {
+                    {Object.entries(row).map(([key, value]) => {
                       const displayValue =
                         value === null ? (
                           <span className="text-gray-400 italic">null</span>
@@ -629,7 +635,7 @@ LIMIT 10"
 
                       return (
                         <td
-                          key={colIndex}
+                          key={`col-${key}`}
                           className={`px-3 py-1.5 align-top ${
                             isLongText ? "cursor-pointer" : "whitespace-nowrap"
                           } overflow-hidden text-ellipsis max-w-[200px]`}
@@ -658,10 +664,13 @@ LIMIT 10"
         <div
           className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center"
           onClick={closeExpandedCell}
+          role="dialog"
+          aria-modal="true"
         >
-          <div
+          <button
             className="bg-white dark:bg-zinc-900 rounded-lg shadow-lg p-4 max-w-2xl max-h-[80vh] overflow-auto"
             onClick={(e) => e.stopPropagation()}
+            type="button"
           >
             <div className="flex justify-between items-center mb-2">
               <h3 className="text-lg font-medium">Cell Content</h3>
@@ -683,7 +692,7 @@ LIMIT 10"
                 String(expandedCell.value)
               )}
             </div>
-          </div>
+          </button>
         </div>
       )}
 

@@ -3,17 +3,16 @@
 import type { ChatRequestOptions, Message } from "ai";
 import cx from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
-import { memo, useMemo, useState } from "react";
+import { memo, useState } from "react";
 
 import type { Vote } from "@/lib/db/schema";
 
 import { DocumentToolCall, DocumentToolResult } from "./document";
-import { ChevronDownIcon, LoaderIcon, PencilEditIcon } from "./icons";
+import { PencilEditIcon } from "./icons";
 import { Markdown } from "./markdown";
 import { MessageActions } from "./message-actions";
 import { PreviewAttachment } from "./preview-attachment";
 import { Weather } from "./weather";
-import { FoundersQuery } from "./founders-query";
 import equal from "fast-deep-equal";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
@@ -47,12 +46,12 @@ const StepUpdate = ({ step, message }: { step: string; message: string }) => {
               r="10"
               stroke="currentColor"
               strokeWidth="4"
-            ></circle>
+            />
             <path
               className="opacity-75"
               fill="currentColor"
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
+            />
           </svg>
         )}
         {step === "results" && (
