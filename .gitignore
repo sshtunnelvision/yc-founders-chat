@@ -38,4 +38,5 @@ yarn-error.log*
 .vscode
 .env*.local
 /keys
-
+/keys/AuthKey_Y7Z594F4A9.p8
+jwt-generate.js
