@@ -14,7 +14,9 @@ export const Overview = () => {
         <h1 className="text-2xl font-light">YC Founder&apos;s Chat</h1>
         <p className="text-muted-foreground">
           Explore and learn about Y Combinator founders and their companies
-          through an intelligent chat interface.
+          through an intelligent chat interface. Access data on 7,374 YC funded
+          founders enriched with LinkedIn profiles, education, and work
+          experience.
         </p>
       </div>
     </motion.div>

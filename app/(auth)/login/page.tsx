@@ -57,7 +57,9 @@ export default function Page() {
           <h1 className="text-2xl font-light">YC Founder&apos;s Chat</h1>
           <p className="text-sm text-muted-foreground">
             Explore and learn about Y Combinator founders and their companies
-            through an intelligent chat interface.
+            through an intelligent chat interface. Our database contains 7,374
+            YC funded founders with enriched LinkedIn data including education,
+            skills, and work experience.
           </p>
         </div>
         <div className="flex flex-col gap-4 px-4 sm:px-16">
