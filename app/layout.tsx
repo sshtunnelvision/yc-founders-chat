@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Toaster } from "sonner";
+import { Analytics } from "@vercel/analytics/react";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -71,6 +72,7 @@ export default async function RootLayout({
           <TooltipProvider>
             <Toaster position="top-center" />
             {children}
+            <Analytics />
           </TooltipProvider>
         </ThemeProvider>
       </body>
