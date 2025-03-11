@@ -1,5 +1,6 @@
 import Link from "next/link";
-import React, { memo } from "react";
+import { memo } from "react";
+import { Children, isValidElement } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { CodeBlock } from "./code-block";
@@ -9,8 +10,8 @@ const components: Partial<Components> = {
   p: ({ node, children, ...props }) => {
     // Check if the only child is a code block
     if (
-      React.Children.toArray(children).some(
-        (child) => React.isValidElement(child) && child.type === CodeBlock
+      Children.toArray(children).some(
+        (child) => isValidElement(child) && child.type === CodeBlock
       )
     ) {
       return <>{children}</>;

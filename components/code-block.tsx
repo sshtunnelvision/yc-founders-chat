@@ -37,7 +37,7 @@ export function CodeBlock({
           <Button
             variant="ghost"
             size="icon"
-            className="h-6 w-6 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
+            className="size-6 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
             onClick={copyToClipboard}
           >
             <CopyIcon size={12} />
