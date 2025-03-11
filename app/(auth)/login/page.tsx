@@ -3,7 +3,11 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import { SocialLoginButtons } from "@/components/social-login-buttons";
+
+// Import the image directly
+import dbIcon from "@/public/db-icon-1_128x128.png";
 
 // Import ReactConfetti dynamically to avoid SSR issues
 const ReactConfetti = dynamic(() => import("react-confetti"), {
@@ -54,6 +58,9 @@ export default function Page() {
 
       <div className="w-full max-w-md overflow-hidden rounded-2xl flex flex-col gap-8">
         <div className="flex flex-col items-center justify-center gap-2 px-4 text-center sm:px-16">
+          <div className="mb-2">
+            <Image src={dbIcon} alt="Database Icon" width={80} height={80} />
+          </div>
           <h1 className="text-2xl font-light">YC Founder&apos;s Chat</h1>
           <p className="text-sm text-justify text-muted-foreground">
             Explore and learn about Y Combinator founders and their experiences
